@@ -12,5 +12,6 @@ Required Files:
 A. search_words.txt
 Output Files (Not including error files):
 A. data.csv
+B. the audio files (not included in the Files folder)
 
 ***ALL THE OTHER CODE FILES ARE CORRECTIONS THAT WERE MADE AFTERWARDS***
