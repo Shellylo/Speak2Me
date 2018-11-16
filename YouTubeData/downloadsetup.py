@@ -63,7 +63,7 @@ def download_audio_and_subtitles(links_path, current_index=0):
 	# Set driver for downloading audio from the internet
 	options = webdriver.ChromeOptions()
 	options.add_experimental_option("prefs", {
-	  "download.default_directory": "C:\\Users\\magshimim\\Documents\\Magshimim\\Project\\AudioDownload",
+	  "download.default_directory": DOWNLOAD_AUDIO_PATH,
 	  "download.prompt_for_download": False,
 	  "download.directory_upgrade": True,
 	  "safebrowsing.enabled": True,
