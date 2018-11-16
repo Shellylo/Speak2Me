@@ -45,12 +45,15 @@ def remove_punctuation(str):
 		Input: subtitle
 		Output: edited subtitle (without unnecessary punctuation)
 	'''
+	# Remove letters vowels signs
 	str = unicodedata.normalize("NFKD", str.decode("utf-8"))
 	str = "".join([c for c in str if not unicodedata.combining(c)]) 
 	str = str.encode("utf-8")
+	
 	str = re.sub("[\(\[].*?[\)\]]", "", str) # Remove all brackets and what is between them
-	str = re.sub('[^א-ת -,]+', '', str) # Remove all non-hebrew letters
+	str = re.sub('[^א-ת -]+', '', str) # Remove all non-hebrew letters
 	str = str.strip(" ") # Remove spaces from begining and end
+	str = str.replace("\xab", "") # Remove bad character
 	
 	return str
 	
@@ -69,13 +72,13 @@ def create_audio_segments(audio, audio_subtitles, count):
 		Input: Current audio, subtitles, audio segment count
 		Output: Dataframe containing audio segments and their subtitles, Current audio segment count
 	'''
-	audio_subtitles.append('\n') # make sure that the titles end with \n (prevent endless loop)
+	
 	audio_segments_df = pd.DataFrame([], columns=['Subtitles','Audio']) # create csv format for the audio segments
 	i = VTT_SUBTITLES_START # skip details vtt file
 	while (i < len(audio_subtitles)):
 	
 		# init current segment's subtitles details
-		invalid_titles = False
+		invalid_titles = True
 		subtitles = ""
 		
 		# cut audio segment and save it
@@ -86,18 +89,16 @@ def create_audio_segments(audio, audio_subtitles, count):
 		
 		# read and edit all the subtitles for current segment
 		while (audio_subtitles[i] != '\n'):
-			if (contain_english_char(audio_subtitles[i])): # check if subtitles contain english words
-				invalid_titles = True
-			else:
+			if (not contain_english_char(audio_subtitles[i])): # check subtitles doesn't contain english words
+				invalid_titles = False
 				subtitles += remove_punctuation(audio_subtitles[i]) + " " # remove unnecessary characters
 			i += 1
 		
 		# add audio (if its subtitles are valid) to the csv format dataframe
 		if (invalid_titles):
-			print "Invalid Subtitles!"
+			print "Invalid Subtitles!", audio_subtitles[i]
 			os.remove(edited_audio_path) # remove audio with invalid subtitles
 		else:
-			#print subtitles[:-1]
 			audio_segments_df = audio_segments_df.append(pd.DataFrame([[subtitles[:-1] , "sample" + str(count) + ".mp3"]], columns=['Subtitles', 'Audio']))
 			count += 1
 			print str(count-1) + " created!"
@@ -149,7 +150,7 @@ def main():
 			print "Audio Loaded!"
 			audio_titles = get_audio_titles(SUBTITLES_PATH + file[:ENDNING_LENGTH] + ".iw.vtt")
 			audio_df, index = (create_audio_segments(audio, audio_titles, index))
-			audio_df.to_csv(CSV_PATH + "subtitles.csv", index = False, mode = "a")
+			audio_df.to_csv(CSV_PATH + "subtitles.csv", index = False, header = False, mode = "a")
 	except Exception, e:
 		print e
 
