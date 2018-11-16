@@ -45,7 +45,7 @@ def main():
 			df[0][i] = title_label
 		
 	df = df[df[0] != ""] #removes all labels that are None
-	df.to_csv("new_data.csv", index=False)
+	df.to_csv("new_data.csv", index=False, header=False)
 	errfile.close()
 	
 main()
