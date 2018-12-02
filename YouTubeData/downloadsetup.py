@@ -54,10 +54,12 @@ def download_audio(driver, link, name_index):
 		except Exception, e:
 			print e
 	
-def download_audio_and_subtitles(links_path, current_index=0):
+def download_audio_and_subtitles(links_path, chunk_size=15, current_index=0):
 	''' 
 		Download audio from all YouTube videos found in received file
-		Input: path to file with links to YouTube videos and index of the first link (download start from it - default 0)
+		Input: path to file with links to YouTube videos,
+			   number of links to download (default 15)
+			   index of the first link - download will start from it (default 0)
 		Output: None
 	'''
 	# Set driver for downloading audio from the internet
@@ -74,16 +76,18 @@ def download_audio_and_subtitles(links_path, current_index=0):
 	links_file = open(links_path, "r")
 	links_list = links_file.readlines()
 	links_file.close()
-	links_list_len = len(links_list)
+	links_list_full_len = len(links_list)
 	links_list = links_list[current_index:]
-	
 	# Download all links
 	try:
-		for link in links_list:
-			download_audio(driver, link, current_index + 1)
-			download_subtitles(link, current_index + 1)
+		i = 0
+		while (i < len(links_list) and i < chunk_size):
+			print "hi"
+			download_audio(driver, links_list[i], current_index + 1)
+			download_subtitles(links_list[i], current_index + 1)
 			current_index += 1
-			print "\nFinished: " + str(current_index) + " Out of: " + str(links_list_len) + "\n"
+			i += 1
+			print "\nFinished: " + str(current_index) + " Out of: " + str(links_list_full_len) + "\n"
 	except Exception, e:
 		print e
 	finally:

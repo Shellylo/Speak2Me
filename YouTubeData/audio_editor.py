@@ -141,7 +141,7 @@ def load_audio(audio_path):
 	return pydub.AudioSegment.from_mp3(audio_path)
 
 def main():
-	dsetup.download_audio_and_subtitles(LINKS_PATH, dsetup.read_current_index(LOG_PATH)) # Download all the audio and its subtitles
+	dsetup.download_audio_and_subtitles(links_path=LINKS_PATH, current_index=dsetup.read_current_index(LOG_PATH)) # Download all the audio and its subtitles
 	index = int(sys.argv[1]) # index (for naming the files) starts with input
 	try:
 		for file in os.listdir(AUDIO_PATH):
