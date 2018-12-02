@@ -21,16 +21,28 @@ RECEIVE_MESSAGES_CODE = 200
 SEND_MESSAGE_CODE = 201
 
 # Errors
-# Soon... :)
+SIGN_UP_DETAILS_MISSING_ERROR_CODE = 0
+USER_ALREADY_EXISTS_ERROR_CODE = 1
+USERNAME_TAKEN_ERROR_CODE = 2
+
 
 OPERATIONS_DICT = {SIGN_UP_CODE: sign_up, LOG_IN_CODE: log_in, RECEIVE_MESSAGES_CODE: receive_messages, SEND_MESSAGE_CODE: send_message}
 
-def login():
+def log_in(message_dict):
+	
+	
+def sign_up(message_dict):
+	'''
+		Function adds new user to database
+		Input: Message (request) dict, contains phone number, password and name
+		Output: Answer message dict
+	'''
+	
 
 def handle_requests():
 	while True:
 		if MESSAGES_QUEUE: # There are messages waiting
-			message_dict = MESSAGES_QUEUE.popleft().loads() # Receive first message in dict format
+			user_socket, message_dict = MESSAGES_QUEUE.popleft().loads() # Receive first message in dict format
 			OPERATIONS_DICT[message_dict["code"]](message_dict)
 
 def client_handler(client_socket):
