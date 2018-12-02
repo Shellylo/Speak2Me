@@ -1,6 +1,8 @@
 import socket
 import thread
 from collections import deque
+import json
+import sqlite_database as sql_db
 
 SOCKET_NUM = 3124
 
@@ -9,6 +11,27 @@ MAX_MESSAGE_LEN = 32768
 
 MESSAGES_QUEUE = deque()
 CONNECTED_CLIENTS = {}
+
+# Not Connected Operations
+SIGN_UP_CODE = 100
+LOG_IN_CODE = 101
+
+# Connected Operations
+RECEIVE_MESSAGES_CODE = 200
+SEND_MESSAGE_CODE = 201
+
+# Errors
+# Soon... :)
+
+OPERATIONS_DICT = {SIGN_UP_CODE: sign_up, LOG_IN_CODE: log_in, RECEIVE_MESSAGES_CODE: receive_messages, SEND_MESSAGE_CODE: send_message}
+
+def login():
+
+def handle_requests():
+	while True:
+		if MESSAGES_QUEUE: # There are messages waiting
+			message_dict = MESSAGES_QUEUE.popleft().loads() # Receive first message in dict format
+			OPERATIONS_DICT[message_dict["code"]](message_dict)
 
 def client_handler(client_socket):
 	'''
@@ -57,6 +80,7 @@ def bind():
 	return listening_socket
 	
 def main():
+	sql_database = sql_db.init_and_load('SpeakToMe.db')
 	try:
 		listening_socket = bind()
 	except Exception, e:
@@ -64,6 +88,7 @@ def main():
 		return 0
 		
 	try:
+		thread.start_new_thread(handle_requests)
 		listen_and_accept(listening_socket)
 	except Exception, e:
 		print e	
