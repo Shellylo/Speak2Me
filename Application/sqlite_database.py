@@ -7,7 +7,8 @@ def does_user_exist(db_connection, phone_num):
 		Input: database connection, phone number to search
 		Output: True if phone number exists in database, False otherwise
 	'''
-	pass
+	connection_cursor = db_connection.cursor()
+	return len(connection_cursor.execute("SELECT * FROM USERS WHERE PHONE_NUM = \"" + phone_num + "\"").fetchall()) > 0
 
 def sign_up(db_connection, phone_num, password, name):
 	'''
@@ -15,7 +16,9 @@ def sign_up(db_connection, phone_num, password, name):
 		Input: database connection, phone number, password and name of the user
 		Output: None
 	'''
-	pass
+	connection_cursor = db_connection.cursor()
+	connection_cursor.execute("INSERT INTO USERS (PHONE_NUM, PASSWORD, NAME) VALUES (\"" + phone_num + "\", \"" + password + "\", \"" + name + "\")")
+	db_connection.commit() # Save changes
 
 def init_and_load(database_name):
 	'''
