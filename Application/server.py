@@ -45,7 +45,7 @@ def sign_up(db_connection, message_dict):
 	ans_message_dict = {}
 	if not ("phone" in message_dict and "password" in message_dict and "name" in message_dict): # Checks if details are missing
 		ans_message_dict["code"] = SIGN_UP_DETAILS_MISSING_ERROR_CODE
-	elif sql_db.does_user_exist(db_connection, message["phone"]): # Checks if phone number already exists
+	elif sql_db.does_user_exist(db_connection, message_dict["phone"]): # Checks if phone number already exists
 		ans_message_dict["code"] = PHONE_EXISTS_ERROR_CODE
 	else: # Passed all the checks, new user is added
 		ans_message_dict["code"] = SIGN_UP_CODE
@@ -121,7 +121,7 @@ def main():
 	finally:
 		# Closing the listening socket
 		listening_socket.close()
-		
+		# Closing the sqlite database connection
 		sql_database.close()
 		
 main()
