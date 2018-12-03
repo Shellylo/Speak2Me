@@ -25,6 +25,9 @@ GENERAL_ERROR_CODE = 0
 SIGN_UP_DETAILS_MISSING_ERROR_CODE = 1
 PHONE_EXISTS_ERROR_CODE = 2
 
+def is_user_connected(client_socket):
+	return client_socket in CONNECTED_CLIENTS.values()
+
 def send_voice_message(db_connection, client_socket, message_dict):
 	'''
 		Function receives message to send, sends it to destination / saves it to database if destination not connected
@@ -62,8 +65,11 @@ def handle_requests(db_connection):
 	OPERATIONS_DICT = {SIGN_UP_CODE: sign_up, LOG_IN_CODE: log_in, RECEIVE_MESSAGES_CODE: receive_messages, SEND_VOICE_MESSAGE_CODE: send_voice_message}
 	while True:
 		if MESSAGES_QUEUE: # There are messages waiting
-			client_socket, message_dict = MESSAGES_QUEUE.popleft().loads() # Receive first message in dict format
+			client_socket, message_dict = MESSAGES_QUEUE.popleft() # Receive first message in dict format
+			message_dict = json.loads(message_dict)
 			ans_messages_dict = OPERATIONS_DICT[message_dict["code"]](db_connection, client_socket, message_dict)
+			for socket in ans_messages_dict.keys():
+				socket.send(json.dumps(ans_messages_dict[socket]))
 
 def client_handler(client_socket):
 	'''
