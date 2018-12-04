@@ -22,20 +22,59 @@ SEND_VOICE_MESSAGE_CODE = 201
 
 # Errors
 GENERAL_ERROR_CODE = 0
-SIGN_UP_DETAILS_MISSING_ERROR_CODE = 1
+DETAILS_MISSING_ERROR_CODE = 1
 PHONE_EXISTS_ERROR_CODE = 2
+
+SOURCE_NOT_FOUND_ERROR_CODE = 4 # DETAILS MISSING ERROR COMBINED
+DESTINATION_UNREACHABLE_ERROR_CODE = 5
 
 def is_user_connected(client_socket):
 	return client_socket in CONNECTED_CLIENTS.values()
+	
+def set_receive_message_ans(ans_dict, src_phone, text_message):
+	'''
+		Function sets receive message answer
+		Input: Answer message dict and message details: source and the message
+		Output: None
+	'''
+	ans_dict["code"] = RECEIVE_MESSAGES_CODE # Set message code (preset)
+	ans_dict["src_phone"] = src_phone # Set sender phone number
+	ans_dict["content"] = text_message
 
 def send_voice_message(db_connection, client_socket, message_dict):
 	'''
 		Function receives message to send, sends it to destination / saves it to database if destination not connected
 		Text message is returned to client as well.
 		Input: Sqlite database connection, message (request) dict, contains source, destination and the message
+				* assuming phones and voice message are valid (optional future changes)
+				* checking: all the necessary information included in the message, if both src and dst phones exist in db
 		Output: Answer message dict
 	'''
-	pass
+	ans_messages_dict = { client_socket: {} }
+	if not ("src_phone" in message_dict and "dst_phone" in message_dict and "content" in message_dict): # Checks if details are missing
+		ans_messages_dict[client_socket]["code"] = DETAILS_MISSING_ERROR_CODE
+		
+	elif not sql_db.does_user_exist(message_dict["src_phone"]): # Checks if source phone exists in database
+		ans_messages_dict[client_socket]["code"] = SOURCE_NOT_FOUND_ERROR_CODE
+		
+	elif not sql_db.does_user_exist(message_dict["dst_phone"): # Checks if destination phone exists in database
+		ans_messages_dict[client_socket]["code"] = DESTINATION_UNREACHABLE_ERROR_CODE
+		
+	else:
+		# Speech to text - to do
+		text_message = "test message"
+		
+		# Save sent message in text form, will be returned to sender as well
+		set_receive_message_ans(ans_messages_dict[client_socket], message_dict["src_phone"], text_message)
+		
+		if message_dict["dst_phone"] in CONNECTED_CLIENTS: # Checks if destination connected			
+			# Save new answer message (the sent message in text form) - to destination
+			ans_messages_dict[CONNECTED_CLIENTS[message_dict["dst_phone"]]] = ans_messages_dict[client_socket] # Shallow copy - is it OK?
+		
+		else: # Destination disconnected, save message to sql database
+			sql_db.save_text_message(db_connection, message_dict["src_phone"], message_dict["dst_phone"], text_message)
+		
+	return ans_messages_dict	
 
 def receive_messages(db_connection, client_socket, message_dict):
 	pass
@@ -53,12 +92,15 @@ def sign_up(db_connection, client_socket, message_dict):
 	'''
 	ans_messages_dict = { client_socket: {} }
 	if not ("phone" in message_dict and "password" in message_dict and "name" in message_dict): # Checks if details are missing
-		ans_messages_dict[client_socket]["code"] = SIGN_UP_DETAILS_MISSING_ERROR_CODE
+		ans_messages_dict[client_socket]["code"] = DETAILS_MISSING_ERROR_CODE
+		
 	elif sql_db.does_user_exist(db_connection, message_dict["phone"]): # Checks if phone number already exists
 		ans_messages_dict[client_socket]["code"] = PHONE_EXISTS_ERROR_CODE
+		
 	else: # Passed all the checks, new user is added
 		ans_messages_dict[client_socket]["code"] = SIGN_UP_CODE
 		sql_db.sign_up(db_connection, message_dict["phone"], message_dict["password"], message_dict["name"])
+		
 	return ans_messages_dict
 
 def handle_requests(db_connection):

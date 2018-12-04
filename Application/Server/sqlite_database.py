@@ -1,6 +1,16 @@
 import sqlite3
 import os
 
+def save_text_message(db_connection, src_phone_num, dst_phone_num, text_message):
+	'''
+		Function saves text message in database temporarily (until message required by destination)
+		Input: database connection, source and destination phone numbers, message in text form
+		Output: None
+	'''
+	connection_cursor = db_connection.cursor()
+	connection_cursor.execute("INSERT INTO MESSAGES (SRC_PHONE, DEST_PHONE, MESSAGE) VALUES (\"" + src_phone_num + "\", \"" + dst_phone_num + "\", \"" + text_message + "\")")
+	db_connection.commit() # Save changes
+
 def does_user_exist(db_connection, phone_num):
 	'''
 		Function checks if user (phone number) exists in database
