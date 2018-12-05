@@ -24,7 +24,8 @@ SEND_VOICE_MESSAGE_CODE = 201
 GENERAL_ERROR_CODE = 0
 DETAILS_MISSING_ERROR_CODE = 1
 PHONE_EXISTS_ERROR_CODE = 2
-
+ALREADY_CONNECTED_ERROR_CODE = 3
+INCORRECT_LOGIN_ERROR_CODE = 4
 SOURCE_INVALID_ERROR_CODE = 5
 DESTINATION_UNREACHABLE_ERROR_CODE = 6
 
@@ -66,10 +67,37 @@ def send_voice_message(db_connection, client_socket, message_dict):
 	return ans_messages_dict	
 
 def receive_messages(db_connection, client_socket, message_dict):
-	pass
+	ans_messages_dict = { }
+	if "phone" not in message_dict: # Checks if details are missing
+		ans_messages_dict[client_socket] = { "code" : DETAILS_MISSING_ERROR_CODE }
+		return ans_messages_dict
+		
+	if message_dict["phone"] not in CONNECTED_CLIENTS or CONNECTED_CLIENTS[message_dict["phone"]] != client_socket:
+		ans_messages_dict[client_socket] = { "code" : SOURCE_INVALID_ERROR_CODE }
+		return ans_messages_dict
+		
+	ans_messages_dict[client_socket] = { "code" : RECEIVE_MESSAGES_CODE, "messages" : sqlite_database.get_new_messages(db_connection, message_dict["phone"]) }
+	sqlite_database.delete_messages(db_connection, message_dict["phone"])
+	return ans_messages_dict
 
 def log_in(db_connection, client_socket, message_dict):
-	pass
+	ans_messages_dict = { }
+	
+	if not ("phone" in message_dict and "password" in message_dict): # Checks if details are missing
+		ans_messages_dict[client_socket] = { "code" : DETAILS_MISSING_ERROR_CODE }
+		return ans_messages_dict
+		
+	if client_socket in CONNECTED_CLIENTS.values() or message_dict["phone"] in CONNECTED_CLIENTS:
+		ans_messages_dict[client_socket] = { "code" : ALREADY_CONNECTED_ERROR_CODE } 
+		return ans_messages_dict
+		
+	if not sql_db.is_login_ok(db_connection, message_dict["phone"], message_dict["password"]):
+		ans_messages_dict[client_socket] = { "code" : INCORRECT_LOGIN_ERROR_CODE }
+		return ans_messages_dict
+		
+	ans_messages_dict[client_socket] = { "code" : LOG_IN_CODE }
+	CONNECTED_CLIENTS[message_dict["phone"]] = client_socket
+	return ans_messages_dict
 	
 def sign_up(db_connection, client_socket, message_dict):
 	'''

@@ -1,6 +1,19 @@
 import sqlite3
 import os
 
+def delete_messages(db_connection, phone_num): #CHECK
+	connection_cursor = db_connection.cursor()
+	connection_cursor.execute("DELETE FROM MESSAGES WHERE DEST_PHONE = \"" + phone_num + "\"")
+
+def get_new_messages(db_connection, phone_num): #CHECK
+	new_messages = []
+	connection_cursor = db_connection.cursor()
+	messages = connection_cursor.execute("SELECT SRC_PHONE, DST_PHONE, MESSAGE FROM MESSAGES WHERE DEST_PHONE = \"" + phone_num + "\"" + " ORDER BY MESSAGE_ID ASC").fetchall()
+	for message in messages:
+		new_messages.append({"src_phone" : message[0], "dst_phone": message[1], "content" : message[2]})
+		
+	return new_messages
+
 def save_text_message(db_connection, src_phone_num, dst_phone_num, text_message):
 	'''
 		Function saves text message in database temporarily (until message required by destination)
@@ -11,6 +24,10 @@ def save_text_message(db_connection, src_phone_num, dst_phone_num, text_message)
 	connection_cursor.execute("INSERT INTO MESSAGES (SRC_PHONE, DEST_PHONE, MESSAGE) VALUES (\"" + src_phone_num + "\", \"" + dst_phone_num + "\", \"" + text_message + "\")")
 	db_connection.commit() # Save changes
 
+def is_login_ok(db_connection, phone_num, password):
+	connection_cursor = db_connection.cursor()
+	return len(connection_cursor.execute("SELECT * FROM USERS WHERE PHONE_NUM = \"" + phone_num + "\"" + " AND PASSWORD = \"" + password + "\"").fetchall()) > 0
+	
 def does_user_exist(db_connection, phone_num):
 	'''
 		Function checks if user (phone number) exists in database
