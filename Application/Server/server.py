@@ -170,7 +170,6 @@ def listen_and_accept(listening_socket):
 		client_socket, client_address = listening_socket.accept()
 		# Start thread for client accepted
 		thread.start_new_thread(client_handler, (client_socket, ))
-		print "CONNECTED"
 
 def bind():
 	'''

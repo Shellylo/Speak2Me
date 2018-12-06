@@ -1,14 +1,18 @@
 package speaktome.client;
 
+import android.icu.util.Output;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.Queue;
 
-public class Client{
+public class Client {
     private ConnectToServer serverConnection;
     private InputMessages incomingMessages;
     private OutputMessages outgoingMessages;
-
 
     public Client() {
         this.serverConnection = new ConnectToServer();
