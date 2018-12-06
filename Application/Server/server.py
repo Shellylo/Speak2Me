@@ -4,6 +4,7 @@ from collections import deque
 import json
 import sqlite_database as sql_db
 
+HOST = "localhost"
 PORT_NUM = 3124
 
 MAX_QUEUE_CONNECTIONS = 5
@@ -19,6 +20,7 @@ LOG_IN_CODE = 101
 # Connected Operations
 RECEIVE_MESSAGES_CODE = 200
 SEND_VOICE_MESSAGE_CODE = 201
+PUSH_MESSAGE_CODE = 202
 
 # Errors
 GENERAL_ERROR_CODE = 0
@@ -55,11 +57,10 @@ def send_voice_message(db_connection, client_socket, message_dict):
 		# Speech to text - to do
 		text_message = "test message"
 		# Set message that will be returned to sender and receiver (including code, message source and the text message)
-		ans_messages_dict[client_socket] = { "code": RECEIVE_MESSAGES_CODE, "messages": [{ "src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": text_message }] }
+		ans_messages_dict[client_socket] = { "code": SEND_VOICE_MESSAGE_CODE, "messages": [{ "src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": text_message }] }
 		
 		if message_dict["dst_phone"] in CONNECTED_CLIENTS: # Destination connected, send answer to destination
-			# Copy message that will be returned to sender and receiver
-			ans_messages_dict[CONNECTED_CLIENTS[message_dict["dst_phone"]]] = ans_messages_dict[client_socket]
+			ans_messages_dict[CONNECTED_CLIENTS[message_dict["dst_phone"]]] = { "code": PUSH_MESSAGE_CODE, "messages": [{ "src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": text_message }]}
 		
 		else: # Destination disconnected, save message to sql database
 			sql_db.save_text_message(db_connection, message_dict["src_phone"], message_dict["dst_phone"], text_message)
@@ -128,7 +129,9 @@ def handle_requests(db_connection):
 			message_dict = json.loads(message_dict)
 			ans_messages_dict = OPERATIONS_DICT[message_dict["code"]](db_connection, client_socket, message_dict)
 			for socket in ans_messages_dict.keys():
-				socket.send(json.dumps(ans_messages_dict[socket]))
+				response = json.dumps(ans_messages_dict[socket])
+				socket.send(str(len(response)).zfill(MAX_SIZE_LEN))
+				socket.send(response)
 
 def client_handler(client_socket):
 	'''
@@ -140,10 +143,10 @@ def client_handler(client_socket):
 		while True:
 			# Receiving data size from client
 			message_size = int(client_socket.recv(MAX_SIZE_LEN))
-		
+
 			# Receiving data from the client
 			client_message = client_socket.recv(message_size)
-		
+
 			# Add message to messages queue with client's socket
 			MESSAGES_QUEUE.append((client_socket, client_message))
 		
@@ -167,6 +170,7 @@ def listen_and_accept(listening_socket):
 		client_socket, client_address = listening_socket.accept()
 		# Start thread for client accepted
 		thread.start_new_thread(client_handler, (client_socket, ))
+		print "CONNECTED"
 
 def bind():
 	'''
@@ -177,7 +181,7 @@ def bind():
 	listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 	# Binding to local port
-	server_address = ('localhost', PORT_NUM)
+	server_address = (HOST, PORT_NUM)
 	listening_socket.bind(server_address)
 	
 	# Listen for incoming connections
@@ -194,9 +198,8 @@ def main():
 		return 0
 		
 	try:
-		thread.start_new_thread(handle_requests, (sql_database, ))
-		listen_and_accept(listening_socket)
-		
+		thread.start_new_thread(listen_and_accept, (listening_socket, ))
+		handle_requests(sql_database)
 		# Test Examples:
 		# print sign_up(sql_database, 8538, {"code": SIGN_UP_CODE, "phone": "0539948875", "password":"cool2", "name":"Netanel"})
 		# CONNECTED_CLIENTS["0548827476"] = 8537
