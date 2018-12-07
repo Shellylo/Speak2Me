@@ -23,10 +23,13 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <activity android:name=".SignupScreen"
-            android:theme="@style/NoBarTheme"/>
+        <activity
+            android:name=".SignupScreen"
+            android:theme="@style/NoBarTheme" />
 
-
+        <activity
+            android:name=".ConversationsScreen"
+            android:theme="@style/NoBarTheme" />
     </application>
 
 </manifest>

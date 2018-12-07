@@ -69,9 +69,9 @@ public class StartScreen extends AppCompatActivity {
                     switch ((int)signUpResponse.get("code"))
                     {
                         case Codes.LOG_IN_CODE:
-                            //Intent intent = new Intent(StartScreen.this, SCREEN.class);
-                            //startActivity(intent);
-                            //finish();
+                            Intent intent = new Intent(StartScreen.this, ConversationsScreen.class);
+                            finish();
+                            startActivity(intent);
                             break;
                         case Codes.DETAILS_MISSING_ERROR_CODE:
                             StartScreen.this.alreadyConnectedError.setVisibility(View.INVISIBLE);
