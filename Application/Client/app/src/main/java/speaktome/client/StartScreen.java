@@ -29,7 +29,7 @@ public class StartScreen extends AppCompatActivity {
         // Set client (server connection)
         this.client = ClientHandler.getClient();
 
-        // Set Buttons
+        // Set widgets
         this.signUpButton = (Button)findViewById(R.id.LogInSignUpButton);
         this.logInButton = (Button)findViewById(R.id.LogInLogInButton);
         this.phoneNumber = (EditText)findViewById(R.id.LogInPhoneBox);
@@ -41,14 +41,6 @@ public class StartScreen extends AppCompatActivity {
         // Set listeners
         this.signUpListener();
         this.logInListener();
-        /*try {
-            JSONObject json = new JSONObject("{\"code\": 100, \"phone\": \"0547768888\", \"password\":\"coolest\", \"name\":\"Nova\"}");
-            client.sendAndRecieve(json);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }*/
-
     }
 
     public void signUpListener() {
