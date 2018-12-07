@@ -44,31 +44,31 @@ public class SignupScreen extends AppCompatActivity {
         this.signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    JSONObject signUpRequest = new JSONObject();
-                    signUpRequest.put("code", Codes.SIGN_UP_CODE);
-                    signUpRequest.put("phone", SignupScreen.this.phoneNumber.getText().toString());
-                    signUpRequest.put("password", SignupScreen.this.password.getText().toString());
-                    signUpRequest.put("name", SignupScreen.this.displayName.getText().toString());
-                    JSONObject signUpResponse = SignupScreen.this.client.sendAndRecieve(signUpRequest);
-                    switch ((int)signUpResponse.get("code"))
-                    {
-                        case Codes.SIGN_UP_CODE:
-                            finish();
-                            break;
-                        case Codes.DETAILS_MISSING_ERROR_CODE:
-                            SignupScreen.this.phoneTakenError.setVisibility(View.INVISIBLE);
-                            SignupScreen.this.detailsMissingError.setVisibility(View.VISIBLE);
-                            break;
-                        case Codes.PHONE_EXISTS_ERROR_CODE:
-                            SignupScreen.this.detailsMissingError.setVisibility(View.INVISIBLE);
-                            SignupScreen.this.phoneTakenError.setVisibility(View.VISIBLE);
-                            break;
-                    }
+            try {
+                JSONObject signUpRequest = new JSONObject();
+                signUpRequest.put("code", Codes.SIGN_UP_CODE);
+                signUpRequest.put("phone", SignupScreen.this.phoneNumber.getText().toString());
+                signUpRequest.put("password", SignupScreen.this.password.getText().toString());
+                signUpRequest.put("name", SignupScreen.this.displayName.getText().toString());
+                JSONObject signUpResponse = SignupScreen.this.client.sendAndRecieve(signUpRequest);
+                switch ((int)signUpResponse.get("code"))
+                {
+                    case Codes.SIGN_UP_CODE:
+                        finish();
+                        break;
+                    case Codes.DETAILS_MISSING_ERROR_CODE:
+                        SignupScreen.this.phoneTakenError.setVisibility(View.INVISIBLE);
+                        SignupScreen.this.detailsMissingError.setVisibility(View.VISIBLE);
+                        break;
+                    case Codes.PHONE_EXISTS_ERROR_CODE:
+                        SignupScreen.this.detailsMissingError.setVisibility(View.INVISIBLE);
+                        SignupScreen.this.phoneTakenError.setVisibility(View.VISIBLE);
+                        break;
                 }
-                catch (Exception e) {
-                    System.out.println(e);
-                }
+            }
+            catch (Exception e) {
+                System.out.println(e);
+            }
             }
         });
     }
