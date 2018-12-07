@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="14dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:fontFamily="@font/oswald_light"
         android:text="Speak To Me"
@@ -33,7 +33,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="3dp"
         android:ems="10"
         android:hint="Phone Number"
         android:inputType="number"
@@ -42,7 +42,7 @@
         app:layout_constraintHorizontal_bias="0.509"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/LogInTitle"
-        app:layout_constraintVertical_bias="0.083" />
+        app:layout_constraintVertical_bias="0.100000024" />
 
     <EditText
         android:id="@+id/LogInPasswordBox"
@@ -115,5 +115,62 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/LogInSignUpMessage"
         app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/LogInDetailsMissingError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/droid_sans_mono"
+        android:text="Please fill out all the details"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="14sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/LogInPhoneBox"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/LogInTitle"
+        app:layout_constraintVertical_bias="0.6" />
+
+    <TextView
+        android:id="@+id/LogInAlreadyConnectedError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/droid_sans_mono"
+        android:text="This user is already connected"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="14sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/LogInPhoneBox"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/LogInTitle"
+        app:layout_constraintVertical_bias="0.6" />
+
+    <TextView
+        android:id="@+id/LogInIncorrectLoginError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="@font/droid_sans_mono"
+        android:text="Incorrect phone number or password"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="14sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/LogInPhoneBox"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/LogInTitle"
+        app:layout_constraintVertical_bias="0.6" />
 
 </android.support.constraint.ConstraintLayout>
