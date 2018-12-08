@@ -32,7 +32,12 @@ SOURCE_INVALID_ERROR_CODE = 5
 DESTINATION_UNREACHABLE_ERROR_CODE = 6
 
 def is_user_connected(client_socket):
-	return client_socket in CONNECTED_CLIENTS.values()
+	'''
+		Function checks if the user is already connected (went through log in successfully) 
+		Input: The socket of the client
+		Output: True if already connected, False otherwise
+	'''
+	return client_socket in CONNECTED_CLIENTS.values() #Checks if the client in the connected clients list
 
 def send_voice_message(db_connection, client_socket, message_dict):
 	'''
@@ -68,12 +73,18 @@ def send_voice_message(db_connection, client_socket, message_dict):
 	return ans_messages_dict	
 
 def receive_messages(db_connection, client_socket, message_dict):
+	'''
+		Function returns all the messages of the user that is asking for new messages
+		Input: database connection, the socket of the client that asked for the new messages and the message (request) 
+			   that contains the phone number that the messages that has been sent to it should be returned
+		Output: answer message dict
+	'''
 	ans_messages_dict = { }
 	if "phone" not in message_dict: # Checks if details are missing
 		ans_messages_dict[client_socket] = { "code" : DETAILS_MISSING_ERROR_CODE }
 		return ans_messages_dict
 		
-	if message_dict["phone"] not in CONNECTED_CLIENTS or CONNECTED_CLIENTS[message_dict["phone"]] != client_socket:
+	if message_dict["phone"] not in CONNECTED_CLIENTS or CONNECTED_CLIENTS[message_dict["phone"]] != client_socket: # Validates the source phone that hes been sent
 		ans_messages_dict[client_socket] = { "code" : SOURCE_INVALID_ERROR_CODE }
 		return ans_messages_dict
 		
@@ -82,17 +93,21 @@ def receive_messages(db_connection, client_socket, message_dict):
 	return ans_messages_dict
 
 def log_in(db_connection, client_socket, message_dict):
+	'''
+		Function checks if the log in details are correct and logs in the user if they are (adds the user to the connected clients)
+		Input: database connection, the socket of the client that is trying to log in and the message (request) that contains phone number and password
+		Output: answer message dict
+	'''
 	ans_messages_dict = { }
-	
 	if not ("phone" in message_dict and "password" in message_dict): # Checks if details are missing
 		ans_messages_dict[client_socket] = { "code" : DETAILS_MISSING_ERROR_CODE }
 		return ans_messages_dict
 		
-	if client_socket in CONNECTED_CLIENTS.values() or message_dict["phone"] in CONNECTED_CLIENTS:
+	if client_socket in CONNECTED_CLIENTS.values() or message_dict["phone"] in CONNECTED_CLIENTS: # Checks that the user is not already loged in
 		ans_messages_dict[client_socket] = { "code" : ALREADY_CONNECTED_ERROR_CODE } 
 		return ans_messages_dict
 		
-	if not sql_db.is_login_ok(db_connection, message_dict["phone"], message_dict["password"]):
+	if not sql_db.is_login_ok(db_connection, message_dict["phone"], message_dict["password"]): # Checks if the phone number and the password match (user can be loged in now)
 		ans_messages_dict[client_socket] = { "code" : INCORRECT_LOGIN_ERROR_CODE }
 		return ans_messages_dict
 		
@@ -177,6 +192,7 @@ def bind():
 		Input: None
 		Output: The socket
 	'''
+	# TCP
 	listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 	# Binding to local port
@@ -188,6 +204,7 @@ def bind():
 	return listening_socket
 	
 def main():
+	# Get database connection
 	sql_database = sql_db.init_and_load('SpeakToMe.db')
 	try:
 		listening_socket = bind()
@@ -197,13 +214,10 @@ def main():
 		return 0
 		
 	try:
+		# Start a thread for listening to clients
 		thread.start_new_thread(listen_and_accept, (listening_socket, ))
+		# Handle all incoming requests
 		handle_requests(sql_database)
-		# Test Examples:
-		# print sign_up(sql_database, 8538, {"code": SIGN_UP_CODE, "phone": "0539948875", "password":"cool2", "name":"Netanel"})
-		# CONNECTED_CLIENTS["0548827476"] = 8537
-		# print send_voice_message(sql_database, 8537, {"code": SEND_VOICE_MESSAGE_CODE, "src_phone": "0548827476", "dst_phone": "0539948875", "content": "53478573485783447893"})
-		
 	except Exception, e:
 		print e	
 		

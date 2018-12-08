@@ -1,11 +1,21 @@
 import sqlite3
 import os
 
-def delete_messages(db_connection, phone_num): #CHECK
+def delete_messages(db_connection, phone_num):
+	'''
+		Function deletes the messages that were sent to phone_num
+		Input: database connection and the phone number that the messages of it will be deleted
+		Output: None
+	'''
 	connection_cursor = db_connection.cursor()
 	connection_cursor.execute("DELETE FROM MESSAGES WHERE DEST_PHONE = \"" + phone_num + "\"")
 
-def get_new_messages(db_connection, phone_num): #CHECK
+def get_new_messages(db_connection, phone_num):
+	'''
+		Function returns all the messages that are sent to phone_num when he was not connected
+		Input: database connection and the phone number that the messages of it should be returned
+		Output: the messages of that were sent to the phone number
+	'''
 	new_messages = []
 	connection_cursor = db_connection.cursor()
 	messages = connection_cursor.execute("SELECT SRC_PHONE, DST_PHONE, MESSAGE FROM MESSAGES WHERE DEST_PHONE = \"" + phone_num + "\"" + " ORDER BY MESSAGE_ID ASC").fetchall()
@@ -25,6 +35,11 @@ def save_text_message(db_connection, src_phone_num, dst_phone_num, text_message)
 	db_connection.commit() # Save changes
 
 def is_login_ok(db_connection, phone_num, password):
+	'''
+		Function checks if the phone matches the password (and if the phone exists)
+		Input: database connection, the phone number of the user that is trying to log in and the password of the user that is trying to log in
+		Output: True if the details are correct, False otherwise
+	'''
 	connection_cursor = db_connection.cursor()
 	return len(connection_cursor.execute("SELECT * FROM USERS WHERE PHONE_NUM = \"" + phone_num + "\"" + " AND PASSWORD = \"" + password + "\"").fetchall()) > 0
 	
