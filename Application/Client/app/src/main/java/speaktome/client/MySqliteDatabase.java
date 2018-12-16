@@ -21,6 +21,11 @@ public class MySqliteDatabase extends SQLiteOpenHelper {
         super(context, name + ".db", null, 1);
     }
 
+    /*
+        Function activated only for the first time the database created
+        Input: database
+        Output: None
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(

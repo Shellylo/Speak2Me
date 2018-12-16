@@ -3,16 +3,18 @@ package speaktome.client;
 import org.json.JSONObject;
 
 import java.io.DataOutputStream;
+import java.util.LinkedList;
+import java.util.Queue;
 
 
 public class OutputMessages implements Runnable{
-    private JSONObject conversationFlow;
+    private Queue<JSONObject> conversationFlow;
 
     private DataOutputStream out;
 
     public OutputMessages(DataOutputStream out) {
         this.out = out;
-        this.conversationFlow = null;
+        this.conversationFlow = new LinkedList<JSONObject>();
 
         Thread createOutputThread = new Thread(this);
         createOutputThread.start();
@@ -22,11 +24,11 @@ public class OutputMessages implements Runnable{
     public void run() {
         try {
             while (true) {
-                if(this.conversationFlow != null) {
-                    String strRequest = conversationFlow.toString();
+                while(!this.conversationFlow.isEmpty()) {
+                    JSONObject msgToSend = this.conversationFlow.remove();
+                    String strRequest = msgToSend.toString();
                     this.out.write(Integer.toString(strRequest.length()).getBytes()); //Sends message size
                     this.out.write(strRequest.getBytes()); //Sends message
-                    this.conversationFlow = null;
                 }
             }
         }
@@ -35,7 +37,7 @@ public class OutputMessages implements Runnable{
         }
     }
 
-    public void setConversationFlow(JSONObject request) {
-        this.conversationFlow = request;
+    public void addConversationFlow(JSONObject request) {
+        this.conversationFlow.add(request);
     }
 }

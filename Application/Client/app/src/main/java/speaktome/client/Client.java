@@ -20,13 +20,15 @@ public class Client {
         this.incomingMessages = new InputMessages(this.serverConnection.getIn());
     }
 
-    public JSONObject sendAndRecieve(JSONObject request) {
-        this.outgoingMessages.setConversationFlow(request); //Send request
-        while(!this.incomingMessages.isMessageWaiting()) {} //Wait for response
-        return this.incomingMessages.getConversationFlow(); //Get response
+    public void send(JSONObject request) {
+        this.outgoingMessages.addConversationFlow(request); //Send request
     }
 
-    public Queue<JSONObject> getPushedMessages() {
-        return this.incomingMessages.getPushMessages();
+    public JSONObject getConversationFlow() {
+        return this.incomingMessages.getConversationFlow();
+    }
+
+    public JSONObject getPushedMessages() {
+        return this.incomingMessages.getPushMessage();
     }
 }

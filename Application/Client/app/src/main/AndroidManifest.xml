@@ -26,10 +26,13 @@
         <activity
             android:name=".SignupScreen"
             android:theme="@style/NoBarTheme" />
-
         <activity
             android:name=".ConversationsScreen"
             android:theme="@style/NoBarTheme" />
+        <activity
+            android:name=".ChatScreen"
+            android:theme="@style/NoBarTheme"
+            />
     </application>
 
 </manifest>

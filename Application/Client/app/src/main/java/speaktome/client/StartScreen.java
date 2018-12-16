@@ -43,6 +43,11 @@ public class StartScreen extends AppCompatActivity {
         this.logInListener();
     }
 
+    /*
+        Function listens to sign up button and changes screen when clicked
+        Input: None
+        Output: None
+     */
     public void signUpListener() {
         this.signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,6 +61,11 @@ public class StartScreen extends AppCompatActivity {
         });
     }
 
+    /*
+        Function listens to log in button, and sends to server log in request when clicked
+        Input: None
+        Output: None
+     */
     public void logInListener() {
         this.logInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,11 +75,18 @@ public class StartScreen extends AppCompatActivity {
                     logInRequest.put("code", Codes.LOG_IN_CODE);
                     logInRequest.put("phone", StartScreen.this.phoneNumber.getText().toString());
                     logInRequest.put("password", StartScreen.this.password.getText().toString());
-                    JSONObject signUpResponse = StartScreen.this.client.sendAndRecieve(logInRequest);
-                    switch ((int)signUpResponse.get("code"))
+
+                    // Send request and wait for response/
+                    StartScreen.this.client.send(logInRequest);
+                    JSONObject logInResponse = StartScreen.this.client.getConversationFlow();
+                    while (logInResponse == null) {
+                        logInResponse = StartScreen.this.client.getConversationFlow();
+                    }
+
+                    switch ((int)logInResponse.get("code"))
                     {
                         case Codes.LOG_IN_CODE:
-                            Intent intent = new Intent(StartScreen.this, ConversationsScreen.class);
+                            Intent intent = new Intent(StartScreen.this, ChatScreen.class);
                             finish();
                             startActivity(intent);
                             break;

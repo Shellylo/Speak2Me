@@ -50,7 +50,13 @@ public class SignupScreen extends AppCompatActivity {
                 signUpRequest.put("phone", SignupScreen.this.phoneNumber.getText().toString());
                 signUpRequest.put("password", SignupScreen.this.password.getText().toString());
                 signUpRequest.put("name", SignupScreen.this.displayName.getText().toString());
-                JSONObject signUpResponse = SignupScreen.this.client.sendAndRecieve(signUpRequest);
+
+                SignupScreen.this.client.send(signUpRequest);
+                JSONObject signUpResponse = SignupScreen.this.client.getConversationFlow();
+                while (signUpResponse == null) {
+                    signUpResponse = SignupScreen.this.client.getConversationFlow();
+                }
+
                 switch ((int)signUpResponse.get("code"))
                 {
                     case Codes.SIGN_UP_CODE:
