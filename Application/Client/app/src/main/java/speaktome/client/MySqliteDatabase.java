@@ -45,15 +45,17 @@ public class MySqliteDatabase extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertMessage (Message msg) {
+    /*
+        Function inserts message into the sqlite database
+        Input: the message
+        Output: None
+     */
+    public void insertMessage (Message msg) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("name", name);
-        contentValues.put("phone", phone);
-        contentValues.put("email", email);
-        contentValues.put("street", street);
-        contentValues.put("place", place);
-        db.insert("contacts", null, contentValues);
-        return true;
+        contentValues.put(MESSAGES_COLUMN_PHONE_CHAT, msg.getPhone());
+        contentValues.put(MESSAGES_COLUMN_IS_MINE, (msg.isMine() ? 1 : 0));
+        contentValues.put(MESSAGES_COLUMN_CONTENT, msg.getContent());
+        db.insert(MESSAGES_TABLE_NAME, null, contentValues);
     }
 }
