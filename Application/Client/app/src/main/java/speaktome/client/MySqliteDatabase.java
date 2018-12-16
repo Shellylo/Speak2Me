@@ -1,5 +1,6 @@
 package speaktome.client;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -42,5 +43,17 @@ public class MySqliteDatabase extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + MESSAGES_TABLE_NAME);
         onCreate(db);
+    }
+
+    public boolean insertMessage (Message msg) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("name", name);
+        contentValues.put("phone", phone);
+        contentValues.put("email", email);
+        contentValues.put("street", street);
+        contentValues.put("place", place);
+        db.insert("contacts", null, contentValues);
+        return true;
     }
 }
