@@ -86,7 +86,8 @@ public class StartScreen extends AppCompatActivity {
                     switch ((int)logInResponse.get("code"))
                     {
                         case Codes.LOG_IN_CODE:
-                            Intent intent = new Intent(StartScreen.this, ChatScreen.class);
+                            Intent intent = new Intent(StartScreen.this, ConversationsScreen.class);
+                            intent.putExtra("phone", StartScreen.this.phoneNumber.getText().toString());
                             finish();
                             startActivity(intent);
                             break;

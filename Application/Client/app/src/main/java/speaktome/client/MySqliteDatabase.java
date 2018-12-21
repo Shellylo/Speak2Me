@@ -2,8 +2,11 @@ package speaktome.client;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
 
 public class MySqliteDatabase extends SQLiteOpenHelper {
     private static final String MESSAGES_TABLE_NAME = "MESSAGES";
@@ -57,5 +60,33 @@ public class MySqliteDatabase extends SQLiteOpenHelper {
         contentValues.put(MESSAGES_COLUMN_IS_MINE, (msg.isMine() ? 1 : 0));
         contentValues.put(MESSAGES_COLUMN_CONTENT, msg.getContent());
         db.insert(MESSAGES_TABLE_NAME, null, contentValues);
+    }
+
+    /*
+        Function returns every first message from each conversation
+        Input: None
+        Output: The message + some details
+     */
+    public ArrayList<ItemDetails> getTopMessages() {
+        ArrayList<ItemDetails> ret = new ArrayList<ItemDetails>();
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res =  db.rawQuery( "SELECT " + MESSAGES_COLUMN_PHONE_CHAT + ", " + MESSAGES_COLUMN_CONTENT +
+                " FROM (SELECT * " +
+                        " FROM " + MESSAGES_TABLE_NAME +
+                        " ORDER BY " + MESSAGES_COLUMN_MESSAGE_ID + " DESC)" +
+                " GROUP BY " + MESSAGES_COLUMN_PHONE_CHAT, null );
+        res.moveToFirst();
+
+        ItemDetails id;
+        while(res.isAfterLast() == false){
+            id = new ItemDetails(null,
+                    res.getString(res.getColumnIndex(MESSAGES_COLUMN_PHONE_CHAT)),
+                    res.getString(res.getColumnIndex(MESSAGES_COLUMN_PHONE_CHAT)),
+                    res.getString(res.getColumnIndex(MESSAGES_COLUMN_CONTENT)));
+            ret.add(id);
+            res.moveToNext();
+        }
+        return ret;
     }
 }
