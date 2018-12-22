@@ -75,7 +75,8 @@ public class MySqliteDatabase extends SQLiteOpenHelper {
                 " FROM (SELECT * " +
                         " FROM " + MESSAGES_TABLE_NAME +
                         " ORDER BY " + MESSAGES_COLUMN_MESSAGE_ID + " DESC)" +
-                " GROUP BY " + MESSAGES_COLUMN_PHONE_CHAT, null );
+                " GROUP BY " + MESSAGES_COLUMN_PHONE_CHAT +
+                " HAVING MAX(" + MESSAGES_COLUMN_MESSAGE_ID + ")", null );
         res.moveToFirst();
 
         ItemDetails id;
