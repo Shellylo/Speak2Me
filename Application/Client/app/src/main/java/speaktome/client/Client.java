@@ -1,13 +1,6 @@
 package speaktome.client;
 
-import android.icu.util.Output;
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import org.json.JSONObject;
-
-import java.io.Serializable;
-import java.util.Queue;
 
 public class Client {
     private ConnectToServer serverConnection;
@@ -28,7 +21,7 @@ public class Client {
         return this.incomingMessages.getConversationFlow();
     }
 
-    public JSONObject getPushedMessages() {
+    public JSONObject getPushedMessage() {
         return this.incomingMessages.getPushMessage();
     }
 }

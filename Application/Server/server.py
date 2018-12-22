@@ -88,8 +88,8 @@ def receive_messages(db_connection, client_socket, message_dict):
 		ans_messages_dict[client_socket] = { "code" : SOURCE_INVALID_ERROR_CODE }
 		return ans_messages_dict
 		
-	ans_messages_dict[client_socket] = { "code" : RECEIVE_MESSAGES_CODE, "messages" : sqlite_database.get_new_messages(db_connection, message_dict["phone"]) }
-	sqlite_database.delete_messages(db_connection, message_dict["phone"])
+	ans_messages_dict[client_socket] = { "code" : RECEIVE_MESSAGES_CODE, "messages" : sql_db.get_new_messages(db_connection, message_dict["phone"]) }
+	sql_db.delete_messages(db_connection, message_dict["phone"])
 	return ans_messages_dict
 
 def log_in(db_connection, client_socket, message_dict):

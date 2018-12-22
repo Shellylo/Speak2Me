@@ -48,16 +48,46 @@ public class MySqliteDatabase extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertMessage (Message msg) {
+    /*
+        Function inserts message into the sqlite database
+        Input: the message
+        Output: None
+     */
+    public void insertMessage (Message msg) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("name", name);
-        contentValues.put("phone", phone);
-        contentValues.put("email", email);
-        contentValues.put("street", street);
-        contentValues.put("place", place);
-        db.insert("contacts", null, contentValues);
-        return true;
+        contentValues.put(MESSAGES_COLUMN_PHONE_CHAT, msg.getPhone());
+        contentValues.put(MESSAGES_COLUMN_IS_MINE, (msg.isMine() ? 1 : 0));
+        contentValues.put(MESSAGES_COLUMN_CONTENT, msg.getContent());
+        db.insert(MESSAGES_TABLE_NAME, null, contentValues);
+    }
+
+    /*
+        Function returns every first message from each conversation
+        Input: None
+        Output: The message + some details
+     */
+    public ArrayList<ItemDetails> getTopMessages() {
+        ArrayList<ItemDetails> ret = new ArrayList<ItemDetails>();
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res =  db.rawQuery( "SELECT " + MESSAGES_COLUMN_PHONE_CHAT + ", " + MESSAGES_COLUMN_CONTENT +
+                " FROM (SELECT * " +
+                        " FROM " + MESSAGES_TABLE_NAME + ")" +
+                " GROUP BY " + MESSAGES_COLUMN_PHONE_CHAT +
+                " HAVING MAX(" + MESSAGES_COLUMN_MESSAGE_ID + ")", null);
+        res.moveToFirst();
+
+        ItemDetails id;
+        while(res.isAfterLast() == false){
+            id = new ItemDetails(null,
+                    res.getString(res.getColumnIndex(MESSAGES_COLUMN_PHONE_CHAT)),
+                    res.getString(res.getColumnIndex(MESSAGES_COLUMN_PHONE_CHAT)),
+                    res.getString(res.getColumnIndex(MESSAGES_COLUMN_CONTENT)));
+            ret.add(id);
+            res.moveToNext();
+        }
+        return ret;
     }
 
     /*

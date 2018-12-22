@@ -18,7 +18,7 @@ def get_new_messages(db_connection, phone_num):
 	'''
 	new_messages = []
 	connection_cursor = db_connection.cursor()
-	messages = connection_cursor.execute("SELECT SRC_PHONE, DST_PHONE, MESSAGE FROM MESSAGES WHERE DEST_PHONE = \"" + phone_num + "\"" + " ORDER BY MESSAGE_ID ASC").fetchall()
+	messages = connection_cursor.execute("SELECT SRC_PHONE, DEST_PHONE, MESSAGE FROM MESSAGES WHERE DEST_PHONE = \"" + phone_num + "\"" + " ORDER BY MESSAGE_ID ASC").fetchall()
 	for message in messages:
 		new_messages.append({"src_phone" : message[0], "dst_phone": message[1], "content" : message[2]})
 		
