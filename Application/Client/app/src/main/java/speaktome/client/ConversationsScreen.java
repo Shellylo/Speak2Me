@@ -69,7 +69,7 @@ public class ConversationsScreen extends AppCompatActivity implements Runnable{
 
     public void initRecyclerView(){
         this.rv = findViewById(R.id.ChatsList);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this.chatsDetails, this);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this.chatsDetails, this, this.phone);
         this.rv.setAdapter(adapter);
         this.rv.setLayoutManager(new LinearLayoutManager(this));
     }
