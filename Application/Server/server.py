@@ -60,7 +60,7 @@ def send_voice_message(db_connection, client_socket, message_dict):
 		
 	else:
 		# Speech to text - to do
-		text_message = "test message"
+		text_message = message_dict["content"]
 		# Set message that will be returned to sender and receiver (including code, message source and the text message)
 		ans_messages_dict[client_socket] = { "code": SEND_VOICE_MESSAGE_CODE, "messages": [{ "src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": text_message }] }
 		

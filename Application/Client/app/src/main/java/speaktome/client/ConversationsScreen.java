@@ -105,7 +105,7 @@ public class ConversationsScreen extends AppCompatActivity implements Runnable{
             while((response = this.client.getConversationFlow()) != null) {
                 try {
                     if ((int)response.get("code") == Codes.RECEIVE_MESSAGES_CODE || (int)response.get("code") == Codes.SEND_VOICE_MESSAGE_CODE) {
-                        messages = this.jsonArrayToList(response.getJSONArray("messages"));
+                        messages = Helper.jsonArrayToList(response.getJSONArray("messages"), this.phone);
                         this.updateChatsDetails(messages);
                     }
                 }
@@ -116,7 +116,7 @@ public class ConversationsScreen extends AppCompatActivity implements Runnable{
             while((response = this.client.getPushedMessage()) != null) {
                 try {
                     if ((int)response.get("code") == Codes.PUSH_MESSAGE_CODE) {
-                        messages = this.jsonArrayToList(response.getJSONArray("messages"));
+                        messages = Helper.jsonArrayToList(response.getJSONArray("messages"), this.phone);
                         this.updateChatsDetails(messages);
                     }
                 }
@@ -125,30 +125,6 @@ public class ConversationsScreen extends AppCompatActivity implements Runnable{
                 }
             }
         }
-    }
-
-    /*
-        Function converts JSONArray to array of messages
-        Input: the JSONArray
-        Output: the array list of messages
-     */
-    private ArrayList<Message> jsonArrayToList(JSONArray messages) {
-        ArrayList<Message> ret = new ArrayList<Message>();
-        JSONObject jsonMessage;
-        boolean isMine;
-        Message message;
-        for(int i = 0; i < messages.length(); i++) {
-            try {
-                jsonMessage = new JSONObject(messages.get(i).toString()); //Get json object of a message
-                isMine = this.phone.equals(jsonMessage.get("src_phone")); // Check if source is mine
-                message = new Message(isMine ? (String)jsonMessage.get("dst_phone") : (String)jsonMessage.get("src_phone"), isMine, (String)jsonMessage.get("content")); // Create the message object
-                ret.add(message);
-            }
-            catch (Exception e) {
-                System.out.println(e);
-            }
-        }
-        return ret;
     }
 
     /*
