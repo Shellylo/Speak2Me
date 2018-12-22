@@ -102,12 +102,13 @@ public class MySqliteDatabase extends SQLiteOpenHelper {
         messagesRows.moveToFirst(); // Go to first row
 
         Message msg = null;
-        while (!messagesRows.isAfterLast())
+        while (messagesRows.isAfterLast() == false)
         {
             msg = new Message( messagesRows.getString(messagesRows.getColumnIndex(MESSAGES_COLUMN_PHONE_CHAT)),
                         messagesRows.getInt(messagesRows.getColumnIndex(MESSAGES_COLUMN_IS_MINE)) == 1,
                                messagesRows.getString(messagesRows.getColumnIndex(MESSAGES_COLUMN_CONTENT)));
             messagesList.add(msg);
+            messagesRows.moveToNext();
         }
         return messagesList;
     }
