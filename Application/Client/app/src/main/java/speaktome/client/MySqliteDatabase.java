@@ -2,8 +2,11 @@ package speaktome.client;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.ArrayList;
 
 public class MySqliteDatabase extends SQLiteOpenHelper {
     private static final String MESSAGES_TABLE_NAME = "MESSAGES";
@@ -55,5 +58,27 @@ public class MySqliteDatabase extends SQLiteOpenHelper {
         contentValues.put("place", place);
         db.insert("contacts", null, contentValues);
         return true;
+    }
+
+    /*
+        Function receives user messages from / to specified number
+        Input: None
+        Output: Messages array
+     */
+    public ArrayList<Message> getMessages (String phoneNum) {
+        ArrayList<Message> messagesList = new ArrayList<Message>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor messagesRows = db.rawQuery("SELECT * FROM " + MESSAGES_TABLE_NAME + " WHERE " + MESSAGES_COLUMN_PHONE_CHAT + " = \"" + phoneNum + "\"", null);
+        messagesRows.moveToFirst(); // Go to first row
+
+        Message msg = null;
+        while (!messagesRows.isAfterLast())
+        {
+            msg = new Message( messagesRows.getString(messagesRows.getColumnIndex(MESSAGES_COLUMN_PHONE_CHAT)),
+                        messagesRows.getInt(messagesRows.getColumnIndex(MESSAGES_COLUMN_IS_MINE)) == 1,
+                               messagesRows.getString(messagesRows.getColumnIndex(MESSAGES_COLUMN_CONTENT)));
+            messagesList.add(msg);
+        }
+        return messagesList;
     }
 }
