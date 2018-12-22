@@ -20,8 +20,8 @@ public class ConversationsScreen extends AppCompatActivity implements Runnable{
     private String phone;
 
     private ArrayList<ItemDetails> chatsDetails = new ArrayList<>();
-    boolean live;
-    Thread thread;
+    private boolean live;
+    private Thread thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
