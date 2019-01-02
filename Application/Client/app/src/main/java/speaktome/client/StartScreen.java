@@ -52,6 +52,8 @@ public class StartScreen extends AppCompatActivity {
         this.signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // Clear errors
                 StartScreen.this.detailsMissingError.setVisibility(View.INVISIBLE);
                 StartScreen.this.alreadyConnectedError.setVisibility(View.INVISIBLE);
                 StartScreen.this.incorrectLogInError.setVisibility(View.INVISIBLE);
@@ -71,12 +73,14 @@ public class StartScreen extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+
+                    // Get login details (phone, password) into log in request
                     JSONObject logInRequest = new JSONObject();
                     logInRequest.put("code", Codes.LOG_IN_CODE);
                     logInRequest.put("phone", StartScreen.this.phoneNumber.getText().toString());
                     logInRequest.put("password", StartScreen.this.password.getText().toString());
 
-                    // Send request and wait for response/
+                    // Send request and wait for response
                     StartScreen.this.client.send(logInRequest);
                     JSONObject logInResponse = StartScreen.this.client.getConversationFlow();
                     while (logInResponse == null) {
@@ -85,23 +89,23 @@ public class StartScreen extends AppCompatActivity {
 
                     switch ((int)logInResponse.get("code"))
                     {
-                        case Codes.LOG_IN_CODE:
+                        case Codes.LOG_IN_CODE: // Log in completed, switch to chats screen
                             Intent intent = new Intent(StartScreen.this, ConversationsScreen.class);
                             intent.putExtra("phone", StartScreen.this.phoneNumber.getText().toString());
                             finish();
                             startActivity(intent);
                             break;
-                        case Codes.DETAILS_MISSING_ERROR_CODE:
+                        case Codes.DETAILS_MISSING_ERROR_CODE: // Details missing in request message
                             StartScreen.this.alreadyConnectedError.setVisibility(View.INVISIBLE);
                             StartScreen.this.incorrectLogInError.setVisibility(View.INVISIBLE);
                             StartScreen.this.detailsMissingError.setVisibility(View.VISIBLE);
                             break;
-                        case Codes.ALREADY_CONNECTED_ERROR_CODE:
+                        case Codes.ALREADY_CONNECTED_ERROR_CODE: // User already connected to server
                             StartScreen.this.detailsMissingError.setVisibility(View.INVISIBLE);
                             StartScreen.this.incorrectLogInError.setVisibility(View.INVISIBLE);
                             StartScreen.this.alreadyConnectedError.setVisibility(View.VISIBLE);
                             break;
-                        case Codes.INCORRECT_LOGIN_ERROR_CODE:
+                        case Codes.INCORRECT_LOGIN_ERROR_CODE: // Incorrect phone / password
                             StartScreen.this.detailsMissingError.setVisibility(View.INVISIBLE);
                             StartScreen.this.alreadyConnectedError.setVisibility(View.INVISIBLE);
                             StartScreen.this.incorrectLogInError.setVisibility(View.VISIBLE);

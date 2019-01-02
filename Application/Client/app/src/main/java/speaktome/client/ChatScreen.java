@@ -81,6 +81,12 @@ public class ChatScreen extends AppCompatActivity implements Runnable {
         this.live = false;
     }
 
+
+    /*
+        Display old messages saved in db
+        Input: None
+        Output: None
+     */
     public void initMessages()
     {
         ArrayList<Message> messages = this.sqlDB.getMessages(this.dstPhone);
@@ -118,7 +124,7 @@ public class ChatScreen extends AppCompatActivity implements Runnable {
     }
 
     /*
-        Function updates text messages in current conversation
+        Function updates text messages in current conversation (and adds each message to sql database)
         Input: Messages to insert
         Output: None
      */
@@ -160,6 +166,11 @@ public class ChatScreen extends AppCompatActivity implements Runnable {
         });
     }
 
+    /*
+        [Thread] Function checks for incoming messages, and handles each one
+        Input: None
+        Output: None
+     */
     @Override
     public void run() {
         JSONObject response;

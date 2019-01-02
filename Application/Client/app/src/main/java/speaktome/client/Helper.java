@@ -1,9 +1,22 @@
 package speaktome.client;
 
+import android.Manifest;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.os.Build;
+import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Helper {
 

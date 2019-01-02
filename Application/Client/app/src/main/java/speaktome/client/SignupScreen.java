@@ -39,34 +39,43 @@ public class SignupScreen extends AppCompatActivity {
         this.signUpListener();
     }
 
+    /*
+        Function listens to sign up button, and sends sign up request (or displays error message) when clicked
+        Input: None
+        Output: None
+     */
     public void signUpListener()
     {
         this.signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             try {
+                // Get sign up details (phone, password and name) into json request
                 JSONObject signUpRequest = new JSONObject();
                 signUpRequest.put("code", Codes.SIGN_UP_CODE);
                 signUpRequest.put("phone", SignupScreen.this.phoneNumber.getText().toString());
                 signUpRequest.put("password", SignupScreen.this.password.getText().toString());
                 signUpRequest.put("name", SignupScreen.this.displayName.getText().toString());
 
+                // Send sign up request
                 SignupScreen.this.client.send(signUpRequest);
-                JSONObject signUpResponse = SignupScreen.this.client.getConversationFlow();
-                while (signUpResponse == null) {
+
+                // Wait for response from server
+                JSONObject signUpResponse = null;
+                do {
                     signUpResponse = SignupScreen.this.client.getConversationFlow();
-                }
+                } while (signUpResponse == null);
 
                 switch ((int)signUpResponse.get("code"))
                 {
-                    case Codes.SIGN_UP_CODE:
+                    case Codes.SIGN_UP_CODE: // User sign up completed, go back to log in screen
                         finish();
                         break;
-                    case Codes.DETAILS_MISSING_ERROR_CODE:
+                    case Codes.DETAILS_MISSING_ERROR_CODE: // Details missing in request message
                         SignupScreen.this.phoneTakenError.setVisibility(View.INVISIBLE);
                         SignupScreen.this.detailsMissingError.setVisibility(View.VISIBLE);
                         break;
-                    case Codes.PHONE_EXISTS_ERROR_CODE:
+                    case Codes.PHONE_EXISTS_ERROR_CODE: // Phone already exists, sign up not completed
                         SignupScreen.this.detailsMissingError.setVisibility(View.INVISIBLE);
                         SignupScreen.this.phoneTakenError.setVisibility(View.VISIBLE);
                         break;

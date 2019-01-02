@@ -8,7 +8,7 @@ import java.net.Socket;
 
 public class ConnectToServer implements Runnable{
     private static final int SERVER_PORT = 3124;
-    private static final String SERVER_IP = "10.0.2.2";
+    private static final String SERVER_IP = "109.66.49.231";
 
     private Socket clientSocket;
     private DataOutputStream out;
@@ -22,6 +22,12 @@ public class ConnectToServer implements Runnable{
         while (!isConnected) {} //wait to connect
     }
 
+    /*
+        [Thread] Connect to server (set up input stream and output stream)
+                 * in order to use sockets, must be thread
+        Input: None
+        Output: None
+     */
     @Override
     public void run() {
         try {
@@ -49,12 +55,22 @@ public class ConnectToServer implements Runnable{
         }
     }
 
+    /*
+        Function returns output stream
+        Input: None
+        Output: None
+     */
     public DataOutputStream getOut() {
-        return out;
+        return this.out;
     }
 
+    /*
+        Function returns input stream
+        Input: None
+        Output: None
+     */
     public DataInputStream getIn() {
 
-        return in;
+        return this.in;
     }
 }

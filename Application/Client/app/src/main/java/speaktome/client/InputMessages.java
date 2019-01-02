@@ -59,6 +59,11 @@ public class InputMessages implements Runnable {
         }
     }
 
+    /*
+        Get one message from conversation flow
+        Input: None
+        Output: message if exists, null otherwise
+     */
     public JSONObject getConversationFlow() {
         JSONObject ret = null;
         if(!this.conversationFlow.isEmpty()) {
@@ -67,6 +72,11 @@ public class InputMessages implements Runnable {
         return ret;
     }
 
+    /*
+        Get one message from push messages
+        Input: None
+        Output: message if exists, null otherwise
+     */
     public JSONObject getPushMessage() {
         JSONObject ret = null;
         if(!this.pushMessages.isEmpty()) {

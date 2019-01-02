@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.Button;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,6 +18,8 @@ public class ConversationsScreen extends AppCompatActivity implements Runnable{
     private MySqliteDatabase sqlDB;
 
     private RecyclerView rv;
+
+    private Button addChatButton;
 
     private String phone;
 
@@ -33,6 +37,10 @@ public class ConversationsScreen extends AppCompatActivity implements Runnable{
 
         this.client = ClientHandler.getClient();
         this.sqlDB = new MySqliteDatabase(this, this.phone);
+
+        this.addChatButton = (Button) findViewById(R.id.ChatsStartChatButton);
+
+        addChatListener();
 
         this.initRecyclerDetails();
         this.initRecyclerView();
@@ -62,11 +70,32 @@ public class ConversationsScreen extends AppCompatActivity implements Runnable{
         this.live = false;
     }
 
+    public void addChatListener()
+    {
+        this.addChatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ConversationsScreen.this, ContactsScreen.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    /*
+        Updates conversations
+        Input: None
+        Output: None
+     */
     public void initRecyclerDetails() {
         this.chatsDetails.clear();
         this.chatsDetails.addAll(this.sqlDB.getTopMessages());
     }
 
+    /*
+        Initializes recyclerview object
+        Input: None
+        Output: None
+     */
     public void initRecyclerView(){
         this.rv = findViewById(R.id.ChatsList);
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(this.chatsDetails, this, this.phone);
@@ -93,7 +122,7 @@ public class ConversationsScreen extends AppCompatActivity implements Runnable{
     }
 
     /*
-        The function handles the received messages
+        [Thread] The function handles the received messages
         Input: None
         Output: None
      */

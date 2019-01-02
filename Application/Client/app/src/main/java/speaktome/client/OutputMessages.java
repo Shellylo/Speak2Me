@@ -20,6 +20,11 @@ public class OutputMessages implements Runnable{
         createOutputThread.start();
     }
 
+    /*
+        [Thread] Send waiting messages (if exist) to server
+        Input: None
+        Output: None
+     */
     @Override
     public void run() {
         try {
@@ -37,6 +42,11 @@ public class OutputMessages implements Runnable{
         }
     }
 
+    /*
+        Add request to outgoing messages queue
+        Input: request to send
+        Output: None
+     */
     public void addConversationFlow(JSONObject request) {
         this.conversationFlow.add(request);
     }

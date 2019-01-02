@@ -3,6 +3,7 @@
     package="speaktome.client">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -31,8 +32,8 @@
             android:theme="@style/NoBarTheme" />
         <activity
             android:name=".ChatScreen"
-            android:theme="@style/NoBarTheme"
-            />
+            android:theme="@style/NoBarTheme" />
+        <activity android:name=".ContactsScreen"></activity>
     </application>
 
 </manifest>

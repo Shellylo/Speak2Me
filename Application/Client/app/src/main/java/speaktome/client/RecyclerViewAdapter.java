@@ -60,6 +60,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         });
     }
 
+    /*
+        Function returns the number of conversations
+        Input: None
+        Output: Number of conversations in Recyclerview
+     */
     @Override
     public int getItemCount() {
         return this.layoutItems.size();
