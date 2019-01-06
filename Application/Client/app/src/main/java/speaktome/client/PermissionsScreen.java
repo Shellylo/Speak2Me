@@ -42,11 +42,11 @@ public class PermissionsScreen extends AppCompatActivity {
 
         if(this.contatctPermission) {
             this.contatctPermissionSwitch.setChecked(true);
-            this.contatctPermissionSwitch.setEnabled(false);
+            this.contatctPermissionSwitch.setClickable(false);
         }
         if(this.michrophonePermission) {
             this.michrophonePermissionSwitch.setChecked(true);
-            this.michrophonePermissionSwitch.setEnabled(false);
+            this.michrophonePermissionSwitch.setClickable(false);
         }
 
         this.contatctPermissionListener();
@@ -98,14 +98,14 @@ public class PermissionsScreen extends AppCompatActivity {
     private void updateSwitches() {
         if(this.contatctPermission) {
             this.contatctPermissionSwitch.setChecked(true);
-            this.contatctPermissionSwitch.setEnabled(false);
+            this.contatctPermissionSwitch.setClickable(false);
         }
         else {
             this.contatctPermissionSwitch.setChecked(false);
         }
         if(this.michrophonePermission) {
             this.michrophonePermissionSwitch.setChecked(true);
-            this.michrophonePermissionSwitch.setClickable(false); //***CLICKABLE OR ENABLED***
+            this.michrophonePermissionSwitch.setClickable(false);
         }
         else {
             this.michrophonePermissionSwitch.setChecked(false);
@@ -145,7 +145,6 @@ public class PermissionsScreen extends AppCompatActivity {
                 if(isChecked) {
                     //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
                     PermissionsScreen.this.requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSIONS_REQUEST_USE_MICROPHONE);
-                    PermissionsScreen.this.michrophonePermission = true; //***REMOVE AFTER ALL CHECKS***
                 }
             }
         });
@@ -186,7 +185,7 @@ public class PermissionsScreen extends AppCompatActivity {
                     // Permission is granted
                     this.michrophonePermission = true;
                 } else {
-                    //this.michrophonePermission = false; //*** REMOVE THE COMMENT***
+                    this.michrophonePermission = false;
                     Toast.makeText(this, "Until you grant the permission, you cannot continue", Toast.LENGTH_SHORT).show();
                 }
                 break;

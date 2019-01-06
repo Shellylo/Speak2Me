@@ -169,6 +169,11 @@ def client_handler(client_socket):
 	#client_socket.sendall("got it!")
 	
 	except Exception, e:
+		#remove client from CONNECTED_CLIENTS if he is connected
+		for key, value in CONNECTED_CLIENTS.items():
+			if value == client_socket:
+				del CONNECTED_CLIENTS[key]
+				
 		print e
 	finally:
 		# Closing the conversation socket
