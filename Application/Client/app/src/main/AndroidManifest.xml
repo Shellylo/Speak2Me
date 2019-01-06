@@ -34,12 +34,14 @@
         <activity
             android:name=".ChatScreen"
             android:theme="@style/NoBarTheme" />
-        <activity android:name=".ContactsScreen" />
+
+        <activity android:name=".ContactsScreen"
+                  android:theme="@style/NoBarTheme"/>
 
         <activity
             android:name=".PermissionsScreen"
-            android:theme="@style/NoBarTheme"
-            />
+            android:theme="@style/NoBarTheme" />
+
     </application>
 
 </manifest>

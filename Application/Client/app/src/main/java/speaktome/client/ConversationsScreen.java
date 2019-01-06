@@ -76,6 +76,7 @@ public class ConversationsScreen extends AppCompatActivity implements Runnable{
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ConversationsScreen.this, ContactsScreen.class);
+                intent.putExtra("phone", ConversationsScreen.this.phone);
                 startActivity(intent);
             }
         });
