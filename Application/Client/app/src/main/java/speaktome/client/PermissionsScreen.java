@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 public class PermissionsScreen extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-    private static final int PERMISSIONS_REQUEST_USE_MICROPHONE = 0; //***CHANGE VALUE***
+    private static final int PERMISSIONS_REQUEST_USE_MICROPHONE = 200;
 
     private boolean contatctPermission;
     private boolean michrophonePermission;
@@ -42,11 +42,11 @@ public class PermissionsScreen extends AppCompatActivity {
 
         if(this.contatctPermission) {
             this.contatctPermissionSwitch.setChecked(true);
-            this.contatctPermissionSwitch.setEnabled(false);
+            this.contatctPermissionSwitch.setClickable(false);
         }
         if(this.michrophonePermission) {
             this.michrophonePermissionSwitch.setChecked(true);
-            this.michrophonePermissionSwitch.setEnabled(false);
+            this.michrophonePermissionSwitch.setClickable(false);
         }
 
         this.contatctPermissionListener();
@@ -81,7 +81,7 @@ public class PermissionsScreen extends AppCompatActivity {
             this.contatctPermission = true;
         }
         // Check the SDK version and whether the permission is already granted or not (microphone).
-        if(true) { //***CHANGE THE STATEMENT***
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && this.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) { //***CHANGE THE STATEMENT***
             this.michrophonePermission = false;
         }
         // Android version is lesser than 6.0 or the permission is already granted (microphone).
@@ -98,14 +98,14 @@ public class PermissionsScreen extends AppCompatActivity {
     private void updateSwitches() {
         if(this.contatctPermission) {
             this.contatctPermissionSwitch.setChecked(true);
-            this.contatctPermissionSwitch.setEnabled(false);
+            this.contatctPermissionSwitch.setClickable(false);
         }
         else {
             this.contatctPermissionSwitch.setChecked(false);
         }
         if(this.michrophonePermission) {
             this.michrophonePermissionSwitch.setChecked(true);
-            this.michrophonePermissionSwitch.setClickable(false); //***CLICKABLE OR ENABLED***
+            this.michrophonePermissionSwitch.setClickable(false);
         }
         else {
             this.michrophonePermissionSwitch.setChecked(false);
@@ -145,7 +145,6 @@ public class PermissionsScreen extends AppCompatActivity {
                 if(isChecked) {
                     //After this point you wait for callback in onRequestPermissionsResult(int, String[], int[]) overriden method
                     PermissionsScreen.this.requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSIONS_REQUEST_USE_MICROPHONE);
-                    PermissionsScreen.this.michrophonePermission = true; //***REMOVE AFTER ALL CHECKS***
                 }
             }
         });
@@ -186,7 +185,7 @@ public class PermissionsScreen extends AppCompatActivity {
                     // Permission is granted
                     this.michrophonePermission = true;
                 } else {
-                    //this.michrophonePermission = false; //*** REMOVE THE COMMENT***
+                    this.michrophonePermission = false;
                     Toast.makeText(this, "Until you grant the permission, you cannot continue", Toast.LENGTH_SHORT).show();
                 }
                 break;
