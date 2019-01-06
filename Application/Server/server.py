@@ -4,7 +4,7 @@ from collections import deque
 import json
 import sqlite_database as sql_db
 
-HOST = "192.168.43.194"
+HOST = "10.0.0.7"
 PORT_NUM = 3124
 
 MAX_QUEUE_CONNECTIONS = 5
