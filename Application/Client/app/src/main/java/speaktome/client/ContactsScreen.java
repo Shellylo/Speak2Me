@@ -1,20 +1,13 @@
 package speaktome.client;
 
-import android.Manifest;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.os.Build;
-import android.provider.ContactsContract;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -36,6 +29,8 @@ public class ContactsScreen extends AppCompatActivity {
         this.phone = intent.getStringExtra("phone");
 
         getContacts(); // Init contacts list
+
+        initRecyclerView(); //Init recycler view
     }
 
     /*
@@ -44,7 +39,7 @@ public class ContactsScreen extends AppCompatActivity {
         Output: None
      */
     public void initRecyclerView(){
-        this.rv = findViewById(R.id.ChatsList);
+        this.rv = findViewById(R.id.ContactsList);
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(this.contactsList, this, this.phone);
         this.rv.setAdapter(adapter);
         this.rv.setLayoutManager(new LinearLayoutManager(this));

@@ -169,12 +169,15 @@ def client_handler(client_socket):
 	#client_socket.sendall("got it!")
 	
 	except Exception, e:
+		user = "Unknown user"
+		ip, port = client_socket.getsockname()
 		#remove client from CONNECTED_CLIENTS if he is connected
 		for key, value in CONNECTED_CLIENTS.items():
 			if value == client_socket:
+				user = key
 				del CONNECTED_CLIENTS[key]
 				
-		print e
+		print user, "disconnected. IP:", ip, "PORT:", port
 	finally:
 		# Closing the conversation socket
 		client_socket.close()
