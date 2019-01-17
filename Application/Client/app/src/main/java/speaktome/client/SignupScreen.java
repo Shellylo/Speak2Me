@@ -1,6 +1,5 @@
 package speaktome.client;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -9,13 +8,12 @@ import android.widget.TextView;
 
 import org.json.JSONObject;
 
-public class SignupScreen extends AppCompatActivity {
-    private Client client;
-
+public class SignupScreen extends ErrorDisplayerScreen {
     private Button signUpButton;
     private EditText phoneNumber;
     private EditText password;
     private EditText displayName;
+
     private TextView detailsMissingError;
     private TextView phoneTakenError;
 
@@ -72,12 +70,10 @@ public class SignupScreen extends AppCompatActivity {
                         finish();
                         break;
                     case Codes.DETAILS_MISSING_ERROR_CODE: // Details missing in request message
-                        SignupScreen.this.phoneTakenError.setVisibility(View.INVISIBLE);
-                        SignupScreen.this.detailsMissingError.setVisibility(View.VISIBLE);
+                        SignupScreen.super.updateError(SignupScreen.this.detailsMissingError);
                         break;
                     case Codes.PHONE_EXISTS_ERROR_CODE: // Phone already exists, sign up not completed
-                        SignupScreen.this.detailsMissingError.setVisibility(View.INVISIBLE);
-                        SignupScreen.this.phoneTakenError.setVisibility(View.VISIBLE);
+                        SignupScreen.super.updateError(SignupScreen.this.phoneTakenError);
                         break;
                 }
             }

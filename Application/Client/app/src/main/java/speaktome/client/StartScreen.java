@@ -2,7 +2,6 @@ package speaktome.client;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,12 +10,11 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 public class StartScreen extends ErrorDisplayerScreen {
-    //private Client client;
-
     private Button signUpButton;
     private Button logInButton;
     private EditText phoneNumber;
     private EditText password;
+
     private TextView detailsMissingError;
     private TextView alreadyConnectedError;
     private TextView incorrectLogInError;
@@ -54,9 +52,7 @@ public class StartScreen extends ErrorDisplayerScreen {
             public void onClick(View v) {
 
                 // Clear errors
-                StartScreen.this.detailsMissingError.setVisibility(View.INVISIBLE);
-                StartScreen.this.alreadyConnectedError.setVisibility(View.INVISIBLE);
-                StartScreen.this.incorrectLogInError.setVisibility(View.INVISIBLE);
+                StartScreen.super.updateError(null);
                 Intent intent = new Intent(StartScreen.this, SignupScreen.class);
                 startActivity(intent);
             }
@@ -82,10 +78,13 @@ public class StartScreen extends ErrorDisplayerScreen {
 
                     // Send request and wait for response
                     StartScreen.this.client.send(logInRequest);
-                    JSONObject logInResponse = StartScreen.this.client.getConversationFlow();
-                    while (logInResponse == null) {
+
+                    // Wait for response from server
+                    JSONObject logInResponse = null;
+                    do {
                         logInResponse = StartScreen.this.client.getConversationFlow();
                     }
+                    while (logInResponse == null);
 
                     switch ((int)logInResponse.get("code"))
                     {
@@ -96,20 +95,12 @@ public class StartScreen extends ErrorDisplayerScreen {
                             startActivity(intent);
                             break;
                         case Codes.DETAILS_MISSING_ERROR_CODE: // Details missing in request message
-                            StartScreen.this.alreadyConnectedError.setVisibility(View.INVISIBLE);
-                            StartScreen.this.incorrectLogInError.setVisibility(View.INVISIBLE);
-                            StartScreen.this.detailsMissingError.setVisibility(View.VISIBLE);
+                            StartScreen.super.updateError(StartScreen.this.detailsMissingError);
                             break;
                         case Codes.ALREADY_CONNECTED_ERROR_CODE: // User already connected to server
-                            /*StartScreen.this.detailsMissingError.setVisibility(View.INVISIBLE);
-                            StartScreen.this.incorrectLogInError.setVisibility(View.INVISIBLE);
-                            StartScreen.this.alreadyConnectedError.setVisibility(View.VISIBLE); */
                             StartScreen.super.updateError(StartScreen.this.alreadyConnectedError);
                             break;
                         case Codes.INCORRECT_LOGIN_ERROR_CODE: // Incorrect phone / password
-                       /*     StartScreen.this.detailsMissingError.setVisibility(View.INVISIBLE);
-                            StartScreen.this.alreadyConnectedError.setVisibility(View.INVISIBLE);
-                            StartScreen.this.incorrectLogInError.setVisibility(View.VISIBLE); */
                             StartScreen.super.updateError(StartScreen.this.incorrectLogInError);
                             break;
                     }
