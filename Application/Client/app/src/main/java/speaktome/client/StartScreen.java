@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import org.json.JSONObject;
 
-public class StartScreen extends AppCompatActivity {
-    private Client client;
+public class StartScreen extends ErrorDisplayerScreen {
+    //private Client client;
 
     private Button signUpButton;
     private Button logInButton;
@@ -27,7 +27,7 @@ public class StartScreen extends AppCompatActivity {
         setContentView(R.layout.activity_start_screen);
 
         // Set client (server connection)
-        this.client = ClientHandler.getClient();
+      //  this.client = ClientHandler.getClient();
 
         // Set widgets
         this.signUpButton = (Button)findViewById(R.id.LogInSignUpButton);
@@ -101,14 +101,16 @@ public class StartScreen extends AppCompatActivity {
                             StartScreen.this.detailsMissingError.setVisibility(View.VISIBLE);
                             break;
                         case Codes.ALREADY_CONNECTED_ERROR_CODE: // User already connected to server
-                            StartScreen.this.detailsMissingError.setVisibility(View.INVISIBLE);
+                            /*StartScreen.this.detailsMissingError.setVisibility(View.INVISIBLE);
                             StartScreen.this.incorrectLogInError.setVisibility(View.INVISIBLE);
-                            StartScreen.this.alreadyConnectedError.setVisibility(View.VISIBLE);
+                            StartScreen.this.alreadyConnectedError.setVisibility(View.VISIBLE); */
+                            StartScreen.super.updateError(StartScreen.this.alreadyConnectedError);
                             break;
                         case Codes.INCORRECT_LOGIN_ERROR_CODE: // Incorrect phone / password
-                            StartScreen.this.detailsMissingError.setVisibility(View.INVISIBLE);
+                       /*     StartScreen.this.detailsMissingError.setVisibility(View.INVISIBLE);
                             StartScreen.this.alreadyConnectedError.setVisibility(View.INVISIBLE);
-                            StartScreen.this.incorrectLogInError.setVisibility(View.VISIBLE);
+                            StartScreen.this.incorrectLogInError.setVisibility(View.VISIBLE); */
+                            StartScreen.super.updateError(StartScreen.this.incorrectLogInError);
                             break;
                     }
                 }
