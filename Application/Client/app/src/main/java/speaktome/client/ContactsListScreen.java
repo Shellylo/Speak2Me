@@ -48,6 +48,7 @@ public class ContactsListScreen extends CommunicationScreen{
                     Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
                     if (pCur.moveToNext()) { // TODO: check if number has the application
                         String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        contactNumber = contactNumber.replaceAll("\\D+","");
                         String contactName = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                         contactDetails = new ContactChatDetails(null, contactName, contactNumber, "");
                         contacts.add(contactDetails);

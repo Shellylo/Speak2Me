@@ -2,9 +2,12 @@ package speaktome.client;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -20,7 +23,10 @@ public class ChatScreen extends CommunicationScreen{
     private ScrollView scrollScreen;
     private LinearLayout chatLayout;
 
+    private EditText inputText;
+
     private Button recordButton;
+    private Button sendButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +41,15 @@ public class ChatScreen extends CommunicationScreen{
         // Set widgets
         this.scrollScreen = (ScrollView) findViewById(R.id.ChatMessages);
         this.chatLayout = (LinearLayout) findViewById(R.id.ChatLayout);;
+        this.inputText = (EditText) findViewById(R.id.ChatMessageInput);
         this.recordButton = (Button) findViewById(R.id.ChatRecordButton);
+        this.sendButton = (Button) findViewById(R.id.ChatSendButton);
+        this.sendButton.setClickable(false);
 
         // Load messages and activate record button listener
         initMessages(); // Display messages history of current chat
         recordListener();
+        textListener();
 
     }
 
@@ -125,5 +135,45 @@ public class ChatScreen extends CommunicationScreen{
                 }
             }
         });
+    }
+
+    /*
+        Check if there is text typed, and change the button according to it (from record to send)
+        Input: None
+        Output: None
+     */
+    private void textListener()
+    {
+        this.inputText.addTextChangedListener(new TextWatcher() {
+
+            // Override abstract functions
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            // Check if input has been inserted
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                if(s.length() != 0) {
+                    changeButtonsState(false);
+                }
+                else {
+                    changeButtonsState(true);
+                }
+            }
+        });
+
+    }
+
+    private void changeButtonsState(boolean isRecordClickable)
+    {
+        this.recordButton.setClickable(isRecordClickable);
+        this.sendButton.setClickable(!isRecordClickable);
+        this.recordButton.setVisibility(isRecordClickable ? View.VISIBLE : View.INVISIBLE);
     }
 }
