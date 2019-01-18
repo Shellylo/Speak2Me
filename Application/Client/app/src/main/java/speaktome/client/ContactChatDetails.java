@@ -1,16 +1,14 @@
 package speaktome.client;
 
-import android.media.Image;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-public class ItemDetails {
+public class ContactChatDetails {
     private ImageView contactImage;
     private String contactName;
     private String contactPhone;
     private String message;
 
-    public ItemDetails(ImageView contactImage, String contactName, String contactPhone, String message) {
+    public ContactChatDetails(ImageView contactImage, String contactName, String contactPhone, String message) {
         this.contactImage = contactImage;
         this.contactName = contactName;
         this.contactPhone = contactPhone;

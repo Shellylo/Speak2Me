@@ -15,11 +15,11 @@ import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
-    private ArrayList<ItemDetails> layoutItems;
+    private ArrayList<ContactChatDetails> layoutItems;
     private Context context;
     private String phone;
 
-    public RecyclerViewAdapter(ArrayList<ItemDetails> layoutItems, Context context, String phone) {
+    public RecyclerViewAdapter(ArrayList<ContactChatDetails> layoutItems, Context context, String phone) {
         this.layoutItems = layoutItems;
         this.context = context;
         this.phone = phone;
@@ -40,7 +40,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
-        ItemDetails currentDetails = this.layoutItems.get(i);
+        ContactChatDetails currentDetails = this.layoutItems.get(i);
         viewHolder.contactImage = currentDetails.getContactImage();
         viewHolder.contactName.setText(currentDetails.getContactName());
         viewHolder.contactPhone.setText(currentDetails.getContactPhone());

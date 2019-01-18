@@ -61,7 +61,7 @@ public class PermissionsScreen extends AppCompatActivity {
      */
     private void moveToNextScreen() {
         Intent intent = new Intent(PermissionsScreen.this, ConversationsScreen.class);
-        intent.putExtra("phone", this.getIntent().getStringExtra("phone"));
+        intent.putExtra("src_phone", this.getIntent().getStringExtra("src_phone"));
         finish();
         startActivity(intent);
     }

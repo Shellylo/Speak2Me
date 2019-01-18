@@ -67,8 +67,8 @@ public class MySqliteDatabase extends SQLiteOpenHelper {
         Input: None
         Output: The message + some details
      */
-    public ArrayList<ItemDetails> getTopMessages() {
-        ArrayList<ItemDetails> ret = new ArrayList<ItemDetails>();
+    public ArrayList<ContactChatDetails> getTopMessages() {
+        ArrayList<ContactChatDetails> ret = new ArrayList<ContactChatDetails>();
 
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor res =  db.rawQuery( "SELECT " + MESSAGES_COLUMN_PHONE_CHAT + ", " + MESSAGES_COLUMN_CONTENT +
@@ -78,9 +78,9 @@ public class MySqliteDatabase extends SQLiteOpenHelper {
                 " HAVING MAX(" + MESSAGES_COLUMN_MESSAGE_ID + ")", null);
         res.moveToFirst();
 
-        ItemDetails id;
+        ContactChatDetails id;
         while(res.isAfterLast() == false){
-            id = new ItemDetails(null,
+            id = new ContactChatDetails(null,
                     res.getString(res.getColumnIndex(MESSAGES_COLUMN_PHONE_CHAT)),
                     res.getString(res.getColumnIndex(MESSAGES_COLUMN_PHONE_CHAT)),
                     res.getString(res.getColumnIndex(MESSAGES_COLUMN_CONTENT)));

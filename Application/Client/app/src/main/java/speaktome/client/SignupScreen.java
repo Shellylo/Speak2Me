@@ -22,9 +22,6 @@ public class SignupScreen extends ErrorDisplayerScreen {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup_screen);
 
-        // Set client (server connection)
-        this.client = ClientHandler.getClient();
-
         // Set widgets
         this.signUpButton = (Button)findViewById(R.id.SignUpSignUpButton);
         this.phoneNumber = (EditText)findViewById(R.id.SignUpPhoneBox);

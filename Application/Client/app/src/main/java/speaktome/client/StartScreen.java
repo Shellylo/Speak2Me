@@ -90,7 +90,7 @@ public class StartScreen extends ErrorDisplayerScreen {
                     {
                         case Codes.LOG_IN_CODE: // Log in completed, switch to chats screen
                             Intent intent = new Intent(StartScreen.this, PermissionsScreen.class);
-                            intent.putExtra("phone", StartScreen.this.phoneNumber.getText().toString());
+                            intent.putExtra("src_phone", StartScreen.this.phoneNumber.getText().toString());
                             finish();
                             startActivity(intent);
                             break;

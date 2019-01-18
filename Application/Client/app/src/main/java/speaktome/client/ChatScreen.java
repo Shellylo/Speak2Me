@@ -1,11 +1,8 @@
 package speaktome.client;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
-import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -14,14 +11,9 @@ import android.widget.TextView;
 
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class ChatScreen extends AppCompatActivity implements Runnable {
-    private Client client;
-    private MySqliteDatabase sqlDB;
-
-    private String srcPhone;
+public class ChatScreen extends CommunicationScreen{
     private String dstPhone;
     private String dstName;
 
@@ -30,9 +22,6 @@ public class ChatScreen extends AppCompatActivity implements Runnable {
 
     private Button recordButton;
 
-    private Thread getMessagesThread;
-    private boolean live;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,13 +29,8 @@ public class ChatScreen extends AppCompatActivity implements Runnable {
 
         // Receive phones and destination name (received from previous screen)
         Intent intent = this.getIntent();
-        this.srcPhone = intent.getStringExtra("src_phone");
         this.dstPhone = intent.getStringExtra("dst_phone");
         this.dstName = intent.getStringExtra("dst_name");
-
-        // Set client (server connection) and sqlite database
-        this.client = ClientHandler.getClient();
-        this.sqlDB = new MySqliteDatabase(this, this.srcPhone);
 
         // Set widgets
         this.scrollScreen = (ScrollView) findViewById(R.id.ChatMessages);
@@ -58,29 +42,6 @@ public class ChatScreen extends AppCompatActivity implements Runnable {
         recordListener();
 
     }
-
-    /*
-        Changes the live variable to true when the activity is resumed (or started) and starts the thread
-        Input: None
-        Output: None
-     */
-    public void onResume() {
-        super.onResume();
-        this.live = true;
-        this.getMessagesThread = new Thread(this);
-        this.getMessagesThread.start();
-    }
-
-    /*
-        Changes the live variable to false when the activity is paused (or finished) so the thread will be terminated
-        Input: None
-        Output: None
-     */
-    public void onPause() {
-        super.onPause();
-        this.live = false;
-    }
-
 
     /*
         Display old messages saved in db
@@ -128,11 +89,11 @@ public class ChatScreen extends AppCompatActivity implements Runnable {
         Input: Messages to insert
         Output: None
      */
-    public void updateMessages(ArrayList<Message> messages)
+    protected void updateMessages(ArrayList<Message> messages)
     {
+        super.updateMessages(messages);
         for (Message message : messages)
         {
-            this.sqlDB.insertMessage(message);
             if (message.getPhone().equals(this.dstPhone))
             {
                 addMessage(message.getContent(), message.isMine());
@@ -164,40 +125,5 @@ public class ChatScreen extends AppCompatActivity implements Runnable {
                 }
             }
         });
-    }
-
-    /*
-        [Thread] Function checks for incoming messages, and handles each one
-        Input: None
-        Output: None
-     */
-    @Override
-    public void run() {
-        JSONObject response;
-        ArrayList<Message> messages;
-        while (this.live) {
-            while((response = this.client.getConversationFlow()) != null) {
-                try {
-                    if ((int)response.get("code") == Codes.RECEIVE_MESSAGES_CODE || (int)response.get("code") == Codes.SEND_VOICE_MESSAGE_CODE) {
-                        messages = Helper.jsonArrayToList(response.getJSONArray("messages"), this.srcPhone);
-                        this.updateMessages(messages);
-                    }
-                }
-                catch (Exception e) {
-                    System.out.println(e);
-                }
-            }
-            while((response = this.client.getPushedMessage()) != null) {
-                try {
-                    if ((int)response.get("code") == Codes.PUSH_MESSAGE_CODE) {
-                        messages = Helper.jsonArrayToList(response.getJSONArray("messages"), this.srcPhone);
-                        this.updateMessages(messages);
-                    }
-                }
-                catch (Exception e) {
-                    System.out.println(e);
-                }
-            }
-        }
     }
 }
