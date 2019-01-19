@@ -18,7 +18,7 @@
         app:layout_constraintBottom_toTopOf="@+id/ChatMessageInput"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Title">
+        app:layout_constraintTop_toBottomOf="@+id/ChatNameTitle">
 
         <LinearLayout
             android:id="@+id/ChatLayout"
@@ -67,14 +67,15 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <TextView
-        android:id="@+id/Title"
+        android:id="@+id/ChatNameTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:text="TextView"
+        android:text="Unknown"
+        android:textColor="@color/colorAccent"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -101,7 +102,7 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <ImageButton
-        android:id="@+id/imageButton4"
+        android:id="@+id/ChatRecordedMessagesButton"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginStart="16dp"
