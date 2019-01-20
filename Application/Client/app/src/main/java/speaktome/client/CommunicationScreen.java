@@ -58,7 +58,7 @@ public class CommunicationScreen extends GeneralScreen implements Runnable{
         while (this.live) {
             while((response = this.client.getConversationFlow()) != null) {
                 try {
-                    if ((int)response.get("code") == Codes.RECEIVE_MESSAGES_CODE || (int)response.get("code") == Codes.SEND_VOICE_MESSAGE_CODE) {
+                    if ((int)response.get("code") == Codes.RECEIVE_MESSAGES_CODE || (int)response.get("code") == Codes.SEND_TEXT_MESSAGE_CODE) {
                         messages = Helper.jsonArrayToList(response.getJSONArray("messages"), this.srcPhone);
                         this.updateMessages(messages);
                     }

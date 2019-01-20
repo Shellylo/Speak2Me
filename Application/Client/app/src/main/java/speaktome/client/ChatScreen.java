@@ -123,7 +123,7 @@ public class ChatScreen extends CommunicationScreen{
             public void onClick(View v) {
                 try {
                     JSONObject sendRecordReq = new JSONObject();
-                    sendRecordReq.put("code", Codes.SEND_VOICE_MESSAGE_CODE);
+                    sendRecordReq.put("code", Codes.SEND_TEXT_MESSAGE_CODE);
                     sendRecordReq.put("src_phone", ChatScreen.this.srcPhone);
                     sendRecordReq.put("dst_phone", ChatScreen.this.dstPhone);
                     sendRecordReq.put("content", "Very looooooooooooooooooooooooooooooooooooooong message wow wow coooooooool!! RANDOM NUMBER -- " + (int)(Math.random() * 50 + 1));

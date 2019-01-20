@@ -7,8 +7,9 @@ public class Codes {
 
     //Connected Operations
     static final int RECEIVE_MESSAGES_CODE = 200;
-    static final int SEND_VOICE_MESSAGE_CODE = 201;
+    static final int SEND_TEXT_MESSAGE_CODE = 201;
     static final int PUSH_MESSAGE_CODE = 202;
+    static final int SPEECH_TO_TEXT_CODE = 203;
 
     //Errors
     static final int GENERAL_ERROR_CODE = 0;

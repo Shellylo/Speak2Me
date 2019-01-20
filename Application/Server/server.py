@@ -19,8 +19,9 @@ LOG_IN_CODE = 101
 
 # Connected Operations
 RECEIVE_MESSAGES_CODE = 200
-SEND_VOICE_MESSAGE_CODE = 201
+SEND_TEXT_MESSAGE_CODE = 201
 PUSH_MESSAGE_CODE = 202
+SPEECH_TO_TEXT_CODE = 203
 
 # Errors
 GENERAL_ERROR_CODE = 0
@@ -38,13 +39,16 @@ def is_user_connected(client_socket):
 		Output: True if already connected, False otherwise
 	'''
 	return client_socket in CONNECTED_CLIENTS.values() #Checks if the client in the connected clients list
+	
+def speech_to_text(db_connection, client_socket, message_dict):
+	
 
-def send_voice_message(db_connection, client_socket, message_dict):
+def send_text_message(db_connection, client_socket, message_dict):
 	'''
-		Function receives message to send, sends it to destination / saves it to database if destination not connected
+		Function receives text message to send, sends it to destination / saves it to database if destination isn't connected
 		Text message is returned to client as well.
 		Input: Sqlite database connection, message (request) dict, contains source, destination and the message
-				* assuming phones and voice message are valid (optional future changes)
+				* assuming phones and text message are valid (optional future changes)
 				* checking: all the necessary information included in the message, if both src and dst phones exist in db
 		Output: Answer message dict
 	'''
@@ -62,7 +66,7 @@ def send_voice_message(db_connection, client_socket, message_dict):
 		# Speech to text - to do
 		text_message = message_dict["content"]
 		# Set message that will be returned to sender and receiver (including code, message source and the text message)
-		ans_messages_dict[client_socket] = { "code": SEND_VOICE_MESSAGE_CODE, "messages": [{ "src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": text_message }] }
+		ans_messages_dict[client_socket] = { "code": SEND_TEXT_MESSAGE_CODE, "messages": [{ "src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": text_message }] }
 		
 		if message_dict["dst_phone"] in CONNECTED_CLIENTS: # Destination connected, send answer to destination
 			ans_messages_dict[CONNECTED_CLIENTS[message_dict["dst_phone"]]] = { "code": PUSH_MESSAGE_CODE, "messages": [{ "src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": text_message }]}
@@ -137,7 +141,7 @@ def sign_up(db_connection, client_socket, message_dict):
 	return ans_messages_dict
 
 def handle_requests(db_connection):
-	OPERATIONS_DICT = {SIGN_UP_CODE: sign_up, LOG_IN_CODE: log_in, RECEIVE_MESSAGES_CODE: receive_messages, SEND_VOICE_MESSAGE_CODE: send_voice_message}
+	OPERATIONS_DICT = {SIGN_UP_CODE: sign_up, LOG_IN_CODE: log_in, RECEIVE_MESSAGES_CODE: receive_messages, SEND_TEXT_MESSAGE_CODE: send_text_message}
 	while True:
 		if MESSAGES_QUEUE: # There are messages waiting
 			client_socket, message_dict = MESSAGES_QUEUE.popleft() # Receive first message in dict format
