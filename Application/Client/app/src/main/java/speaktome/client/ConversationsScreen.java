@@ -29,6 +29,12 @@ public class ConversationsScreen extends ContactsListScreen{
         requestNewMessages();
     }
 
+    public void onResume() {
+        super.onResume();
+        initRecyclerDetails();
+        this.rv.getAdapter().notifyDataSetChanged();
+    }
+
     public void addChatListener()
     {
         this.addChatButton.setOnClickListener(new View.OnClickListener() {
