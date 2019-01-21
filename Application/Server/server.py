@@ -3,6 +3,7 @@ import thread
 from collections import deque
 import json
 import sqlite_database as sql_db
+import base64
 
 HOST = "localhost"
 PORT_NUM = 3124
@@ -32,19 +33,43 @@ INCORRECT_LOGIN_ERROR_CODE = 4
 SOURCE_INVALID_ERROR_CODE = 5
 DESTINATION_UNREACHABLE_ERROR_CODE = 6
 
-def is_user_connected(client_socket):
+def is_user_connected(client_socket, phone):
 	'''
-		Function checks if the user is already connected (went through log in successfully) 
-		Input: The socket of the client
-		Output: True if already connected, False otherwise
+		Function checks if client is a logged user
+		Input: The socket of the client, phone number
+		Output: True if user connected, false otherwise
 	'''
-	return client_socket in CONNECTED_CLIENTS.values() #Checks if the client in the connected clients list
+	return phone in CONNECTED_CLIENTS and CONNECTED_CLIENTS[phone] == client_socket
+
+def is_socket_phone_connected(client_socket, phone):
+	'''
+		Function checks if client is already connected (already went through log in successfully)
+		Input: The socket of the client, input phone number
+		Output: True if already connected, false otherwise
+	'''
+	return client_socket in CONNECTED_CLIENTS.values() or phone in CONNECTED_CLIENTS
 	
 def speech_to_text(db_connection, client_socket, message_dict):
 	'''
-		Function receives voice record 
+		Function receives audio and transfers it into text.
+		The text message is returned to sender (client)
+		Input: Sqlite database connection
+			   client socket
+			   message (request) dict, contains: source and audio file
+		Output: Answer message dict, contains text message		
 	'''
-	
+	ans_messages_dict = {}
+	if not "src_phone" in message_dict and "content" in message_dict: # Details missing
+		ans_messages_dict[client_socket] = { "code": DETAILS_MISSING_ERROR_CODE }
+		
+	elif not is_user_connected(client_socket, message_dict["src_phone"]): # Socket / phone isn't connected ##(CHECK!!)##
+		ans_messages_dict[client_socket] = { "code": SOURCE_INVALID_ERROR_CODE }
+		
+	else:
+		audio_file_data = base64.b64decode(message_dict["content"]) # decode file data
+		# Speech to text - to do
+		
+	return ans_messages_dict
 
 def send_text_message(db_connection, client_socket, message_dict):
 	'''
@@ -59,19 +84,19 @@ def send_text_message(db_connection, client_socket, message_dict):
 	if not ("src_phone" in message_dict and "dst_phone" in message_dict and "content" in message_dict): # Checks if details are missing
 		ans_messages_dict[client_socket] = { "code": DETAILS_MISSING_ERROR_CODE }
 		
-	elif message_dict["src_phone"] not in CONNECTED_CLIENTS or CONNECTED_CLIENTS[message_dict["src_phone"]] != client_socket: # Checks if source phone is client's true phone
+	elif not is_user_connected(client_socket, message_dict["src_phone"]): # Checks if source phone is client's false phone
 		ans_messages_dict[client_socket] = { "code": SOURCE_INVALID_ERROR_CODE }
 		
 	elif not sql_db.does_user_exist(db_connection, message_dict["dst_phone"]): # Checks if destination phone exists in database
 		ans_messages_dict[client_socket] = { "code": DESTINATION_UNREACHABLE_ERROR_CODE }
 		
 	else:
-		# Speech to text - to do
 		text_message = message_dict["content"]
 		# Set message that will be returned to sender and receiver (including code, message source and the text message)
 		ans_messages_dict[client_socket] = { "code": SEND_TEXT_MESSAGE_CODE, "messages": [{ "src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": text_message }] }
 		
-		if message_dict["dst_phone"] in CONNECTED_CLIENTS: # Destination connected, send answer to destination
+		# Send message to destination client if connected
+		if message_dict["dst_phone"] in CONNECTED_CLIENTS: # Destination connected
 			ans_messages_dict[CONNECTED_CLIENTS[message_dict["dst_phone"]]] = { "code": PUSH_MESSAGE_CODE, "messages": [{ "src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": text_message }]}
 		
 		else: # Destination disconnected, save message to sql database
@@ -110,7 +135,7 @@ def log_in(db_connection, client_socket, message_dict):
 		ans_messages_dict[client_socket] = { "code" : DETAILS_MISSING_ERROR_CODE }
 		return ans_messages_dict
 		
-	if client_socket in CONNECTED_CLIENTS.values() or message_dict["phone"] in CONNECTED_CLIENTS: # Checks that the user is not already loged in
+	if is_socket_phone_connected(client_socket, message_dict["phone"]): # Checks that the user is not already loged in
 		ans_messages_dict[client_socket] = { "code" : ALREADY_CONNECTED_ERROR_CODE } 
 		return ans_messages_dict
 		
