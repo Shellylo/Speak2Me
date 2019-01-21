@@ -22,7 +22,7 @@ public class ConversationsScreen extends ContactsListScreen{
         addChatListener();
 
         this.contactsDetails = new ArrayList<ContactChatDetails>();
-        initRecyclerDetails();
+        this.initRecyclerDetails();
         this.rv = findViewById(R.id.ChatsList);
         initRecyclerView();
 
@@ -31,7 +31,7 @@ public class ConversationsScreen extends ContactsListScreen{
 
     public void onResume() {
         super.onResume();
-        initRecyclerDetails();
+        this.initRecyclerDetails();
         this.rv.getAdapter().notifyDataSetChanged();
     }
 
