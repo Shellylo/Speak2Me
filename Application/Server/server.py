@@ -41,6 +41,9 @@ def is_user_connected(client_socket):
 	return client_socket in CONNECTED_CLIENTS.values() #Checks if the client in the connected clients list
 	
 def speech_to_text(db_connection, client_socket, message_dict):
+	'''
+		Function receives voice record 
+	'''
 	
 
 def send_text_message(db_connection, client_socket, message_dict):
