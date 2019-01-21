@@ -59,7 +59,11 @@ public class CommunicationScreen extends GeneralScreen implements Runnable{
             while((response = this.client.getConversationFlow()) != null) {
                 try {
                     if ((int)response.get("code") == Codes.RECEIVE_MESSAGES_CODE || (int)response.get("code") == Codes.SEND_TEXT_MESSAGE_CODE) {
-                        messages = Helper.jsonArrayToList(response.getJSONArray("messages"), this.srcPhone);
+                        messages = Helper.jsonArrayToList(response.getJSONArray("messages"), this.srcPhone, true);
+                        this.updateMessages(messages);
+                    }
+                    else if((int)response.get("code") == Codes.SPEECH_TO_TEXT_CODE) {
+                        messages = Helper.jsonArrayToList(response.getJSONArray("messages"), this.srcPhone, false);
                         this.updateMessages(messages);
                     }
                 }
@@ -70,7 +74,7 @@ public class CommunicationScreen extends GeneralScreen implements Runnable{
             while((response = this.client.getPushedMessage()) != null) {
                 try {
                     if ((int)response.get("code") == Codes.PUSH_MESSAGE_CODE) {
-                        messages = Helper.jsonArrayToList(response.getJSONArray("messages"), this.srcPhone);
+                        messages = Helper.jsonArrayToList(response.getJSONArray("messages"), this.srcPhone, true);
                         this.updateMessages(messages);
                     }
                 }
