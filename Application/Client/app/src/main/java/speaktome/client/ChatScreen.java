@@ -165,6 +165,7 @@ public class ChatScreen extends CommunicationScreen{
 
                     ChatScreen.this.client.send(sendRecordReq); // Send text message to server
                     ChatScreen.this.inputText.setText(""); // Clear typed text from text box in screen
+
                 }
                 catch (Exception e) {
                     System.out.println(e);
