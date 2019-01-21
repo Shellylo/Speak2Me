@@ -24,7 +24,6 @@ public class ChatScreen extends CommunicationScreen{
     private ScrollView scrollScreen;
     private LinearLayout chatLayout;
 
-    private TextView chatTitle;
     private EditText inputText;
 
     private Button recordButton;
@@ -43,21 +42,17 @@ public class ChatScreen extends CommunicationScreen{
 
         // Set widgets
         this.scrollScreen = (ScrollView) findViewById(R.id.ChatMessages);
-        this.chatLayout = (LinearLayout) findViewById(R.id.ChatLayout);
-        this.chatTitle = (TextView) findViewById(R.id.ChatNameTitle);
-        this.chatTitle.setText(this.dstName); // Insert contact name into chat title
+        this.chatLayout = (LinearLayout) findViewById(R.id.ChatLayout);;
         this.inputText = (EditText) findViewById(R.id.ChatMessageInput);
         this.recordButton = (Button) findViewById(R.id.ChatRecordButton);
         this.sendButton = (Button) findViewById(R.id.ChatSendButton);
         this.recordedMessagesButton = (ImageButton) findViewById(R.id.ChatRecordedMessagesButton);
         this.sendButton.setClickable(false);
 
+        // Load messages and activate record button listener
         initMessages(); // Display messages history of current chat
-
-        // Activate listeners
         recordListener();
         textListener();
-        sendButtonListener();
         recordedMessagesListener();
     }
 
@@ -124,36 +119,9 @@ public class ChatScreen extends CommunicationScreen{
         Input: None
         Output: None
      */
-    private void recordListener()
+    public void recordListener()
     {
         this.recordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    JSONObject sendRecordReq = new JSONObject();
-                    sendRecordReq.put("code", Codes.SPEECH_TO_TEXT_CODE);
-                    sendRecordReq.put("src_phone", ChatScreen.this.srcPhone);
-                    sendRecordReq.put("dst_phone", ChatScreen.this.dstPhone);
-                    sendRecordReq.put("content", "Very looooooooooooooooooooooooooooooooooooooong message wow wow coooooooool!! RANDOM NUMBER -- " + (int)(Math.random() * 50 + 1));
-
-                    ChatScreen.this.client.send(sendRecordReq);
-                }
-                catch (Exception e) {
-                    System.out.println(e);
-                }
-            }
-        });
-    }
-
-    /*
-        Function listens to send message button.
-        When clicked, receives typed text in text box and sends it to server.
-        Input: None
-        Output: None
-     */
-    private void sendButtonListener()
-    {
-        this.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
@@ -161,7 +129,7 @@ public class ChatScreen extends CommunicationScreen{
                     sendRecordReq.put("code", Codes.SEND_TEXT_MESSAGE_CODE);
                     sendRecordReq.put("src_phone", ChatScreen.this.srcPhone);
                     sendRecordReq.put("dst_phone", ChatScreen.this.dstPhone);
-                    sendRecordReq.put("content", ChatScreen.this.inputText.getText());
+                    sendRecordReq.put("content", "Very looooooooooooooooooooooooooooooooooooooong message wow wow coooooooool!! RANDOM NUMBER -- " + (int)(Math.random() * 50 + 1));
 
                     ChatScreen.this.client.send(sendRecordReq);
                 }
@@ -194,10 +162,10 @@ public class ChatScreen extends CommunicationScreen{
             @Override
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
-                if(s.length() != 0) { // Input was inserted, record button invisible
+                if(s.length() != 0) {
                     changeButtonsState(false);
                 }
-                else { // Input box is empty, record button visible
+                else {
                     changeButtonsState(true);
                 }
             }
