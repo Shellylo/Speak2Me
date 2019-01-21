@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ public class ChatScreen extends CommunicationScreen{
 
     private Button recordButton;
     private Button sendButton;
+    private ImageButton recordedMessagesButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +46,14 @@ public class ChatScreen extends CommunicationScreen{
         this.inputText = (EditText) findViewById(R.id.ChatMessageInput);
         this.recordButton = (Button) findViewById(R.id.ChatRecordButton);
         this.sendButton = (Button) findViewById(R.id.ChatSendButton);
+        this.recordedMessagesButton = (ImageButton) findViewById(R.id.ChatRecordedMessagesButton);
         this.sendButton.setClickable(false);
 
         // Load messages and activate record button listener
         initMessages(); // Display messages history of current chat
         recordListener();
         textListener();
-
+        recordedMessagesListener();
     }
 
     /*
@@ -60,7 +63,7 @@ public class ChatScreen extends CommunicationScreen{
      */
     public void initMessages()
     {
-        ArrayList<Message> messages = this.sqlDB.getMessages(this.dstPhone);
+        ArrayList<Message> messages = this.sqlDB.getMessages(this.dstPhone, true);
         for (Message message : messages)
         {
             addMessage(message.getContent(), message.isMine());
@@ -104,7 +107,7 @@ public class ChatScreen extends CommunicationScreen{
         super.updateMessages(messages);
         for (Message message : messages)
         {
-            if (message.getPhone().equals(this.dstPhone))
+            if (message.getPhone().equals(this.dstPhone) && message.isInChat())
             {
                 addMessage(message.getContent(), message.isMine());
             }
@@ -112,7 +115,7 @@ public class ChatScreen extends CommunicationScreen{
     }
 
     /*
-        Function listens to sign up button. When clicked, receives record and sends it to server
+        Function listens record button. When clicked, receives record and sends it to server
         Input: None
         Output: None
      */
@@ -175,5 +178,36 @@ public class ChatScreen extends CommunicationScreen{
         this.recordButton.setClickable(isRecordClickable);
         this.sendButton.setClickable(!isRecordClickable);
         this.recordButton.setVisibility(isRecordClickable ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    /*
+        Function listens recorded messages button button. When clicked, start recorded messages screen
+        Input: None
+        Output: None
+     */
+    public void recordedMessagesListener()
+    {
+        this.recordedMessagesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChatScreen.this, RecordedMessagesScreen.class);
+                intent.putExtra("src_phone", ChatScreen.this.srcPhone);
+                intent.putExtra("dst_phone", ChatScreen.this.dstPhone);
+                startActivityForResult(intent,0);
+            }
+        });
+    }
+
+    /*
+        Function waits for result from recorded messages activity
+        Input: request code, result code, and data
+        Output: None
+     */
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
+                this.inputText.setText(data.getStringExtra("message"));
+            }
+        }
     }
 }

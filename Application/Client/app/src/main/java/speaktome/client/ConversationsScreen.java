@@ -54,8 +54,17 @@ public class ConversationsScreen extends ContactsListScreen{
      */
     public void initRecyclerDetails() {
         this.contactsDetails.clear();
-        //ArrayList<ItemDetails> contacts = this.sqlDB.getTopMessages();
-        this.contactsDetails.addAll(this.sqlDB.getTopMessages());
+        ArrayList<ContactChatDetails> messages = this.sqlDB.getTopMessages();
+        ArrayList<ContactChatDetails> contacts = super.getContacts();
+        for (int i = 0; i < messages.size(); i++) {
+            for(int k = 0; k < contacts.size(); k++) {
+                if(messages.get(i).getContactPhone() == contacts.get(k).getContactPhone()) {
+                    messages.get(i).setContactName(contacts.get(k).getContactName());
+                    break;
+                }
+            }
+        }
+        this.contactsDetails.addAll(messages);
     }
 
     /*
