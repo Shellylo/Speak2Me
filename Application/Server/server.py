@@ -73,9 +73,9 @@ def speech_to_text(db_connection, client_socket, message_dict):
 		ans_messages_dict[client_socket] = { "code": SOURCE_INVALID_ERROR_CODE }
 		
 	else:
-		audio_file_data = base64.b64decode(message_dict["content"]) # decode file data
+		#audio_file_data = base64.b64decode(message_dict["content"]) # decode file data
 		# Speech to text - to do
-		ans_messages_dict[client_socket] = { "code": SPEECH_TO_TEXT_CODE, "src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": message_dict["content"] }
+		ans_messages_dict[client_socket] = { "code": SPEECH_TO_TEXT_CODE, "messages": [{"src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": message_dict["content"]}] }
 		
 	return ans_messages_dict
 
@@ -101,7 +101,7 @@ def send_text_message(db_connection, client_socket, message_dict):
 	else:
 		text_message = message_dict["content"]
 		# Set message that will be returned to sender and receiver (including code, message source and the text message)
-		ans_messages_dict[client_socket] = { "code": SEND_TEXT_MESSAGE_CODE, "messages": [{ "src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": text_message }] }
+		ans_messages_dict[client_socket] = { "code": SEND_TEXT_MESSAGE_CODE, "messages": [{"src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": text_message }] }
 		
 		# Send message to destination client if connected
 		if message_dict["dst_phone"] in CONNECTED_CLIENTS: # Destination connected
@@ -130,6 +130,7 @@ def receive_messages(db_connection, client_socket, message_dict):
 		
 	ans_messages_dict[client_socket] = { "code" : RECEIVE_MESSAGES_CODE, "messages" : sql_db.get_new_messages(db_connection, message_dict["phone"]) }
 	sql_db.delete_messages(db_connection, message_dict["phone"])
+
 	return ans_messages_dict
 
 def log_in(db_connection, client_socket, message_dict):
@@ -177,7 +178,7 @@ def sign_up(db_connection, client_socket, message_dict):
 	return ans_messages_dict
 
 def handle_requests(db_connection):
-	OPERATIONS_DICT = {SIGN_UP_CODE: sign_up, LOG_IN_CODE: log_in, RECEIVE_MESSAGES_CODE: receive_messages, SEND_TEXT_MESSAGE_CODE: send_text_message}
+	OPERATIONS_DICT = {SIGN_UP_CODE: sign_up, LOG_IN_CODE: log_in, RECEIVE_MESSAGES_CODE: receive_messages, SEND_TEXT_MESSAGE_CODE: send_text_message, SPEECH_TO_TEXT_CODE: speech_to_text}
 	while True:
 		if MESSAGES_QUEUE: # There are messages waiting
 			client_socket, message_dict = MESSAGES_QUEUE.popleft() # Receive first message in dict format

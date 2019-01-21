@@ -58,7 +58,7 @@ public class ConversationsScreen extends ContactsListScreen{
         ArrayList<ContactChatDetails> contacts = super.getContacts();
         for (int i = 0; i < messages.size(); i++) {
             for(int k = 0; k < contacts.size(); k++) {
-                if(messages.get(i).getContactPhone() == contacts.get(k).getContactPhone()) {
+                if(messages.get(i).getContactPhone().equals(contacts.get(k).getContactPhone())) {
                     messages.get(i).setContactName(contacts.get(k).getContactName());
                     break;
                 }
