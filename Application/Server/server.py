@@ -33,6 +33,13 @@ INCORRECT_LOGIN_ERROR_CODE = 4
 SOURCE_INVALID_ERROR_CODE = 5
 DESTINATION_UNREACHABLE_ERROR_CODE = 6
 
+def message_details_exist(message):
+	''' Function checks if message has the necessary details: source phone, destination phone, content
+		Input: The message (dictionary)
+		Output: True if message contains all the details, false otherwise
+	'''
+	return "src_phone" in message and "dst_phone" in message and "content" in message
+
 def is_user_connected(client_socket, phone):
 	'''
 		Function checks if client is a logged user
@@ -59,15 +66,16 @@ def speech_to_text(db_connection, client_socket, message_dict):
 		Output: Answer message dict, contains text message		
 	'''
 	ans_messages_dict = {}
-	if not "src_phone" in message_dict and "content" in message_dict: # Details missing
+	if not message_details_exist(message_dict): # Details missing
 		ans_messages_dict[client_socket] = { "code": DETAILS_MISSING_ERROR_CODE }
 		
-	elif not is_user_connected(client_socket, message_dict["src_phone"]): # Socket / phone isn't connected ##(CHECK!!)##
+	elif not is_user_connected(client_socket, message_dict["src_phone"]): # Socket / phone isn't connected
 		ans_messages_dict[client_socket] = { "code": SOURCE_INVALID_ERROR_CODE }
 		
 	else:
 		audio_file_data = base64.b64decode(message_dict["content"]) # decode file data
 		# Speech to text - to do
+		ans_messages_dict[client_socket] = { "code": SPEECH_TO_TEXT_CODE, "src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": message_dict["content"] }
 		
 	return ans_messages_dict
 
@@ -81,10 +89,10 @@ def send_text_message(db_connection, client_socket, message_dict):
 		Output: Answer message dict
 	'''
 	ans_messages_dict = {}
-	if not ("src_phone" in message_dict and "dst_phone" in message_dict and "content" in message_dict): # Checks if details are missing
+	if not message_details_exist(message_dict): #Details missing
 		ans_messages_dict[client_socket] = { "code": DETAILS_MISSING_ERROR_CODE }
 		
-	elif not is_user_connected(client_socket, message_dict["src_phone"]): # Checks if source phone is client's false phone
+	elif not is_user_connected(client_socket, message_dict["src_phone"]): # Socket / phone isn't connected
 		ans_messages_dict[client_socket] = { "code": SOURCE_INVALID_ERROR_CODE }
 		
 	elif not sql_db.does_user_exist(db_connection, message_dict["dst_phone"]): # Checks if destination phone exists in database
