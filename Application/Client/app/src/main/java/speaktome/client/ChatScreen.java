@@ -61,6 +61,15 @@ public class ChatScreen extends CommunicationScreen{
         recordedMessagesListener();
     }
 
+    public void onResume()
+    {
+        super.onResume();
+
+        // Reload screen with updated messages
+        this.chatLayout.removeAllViews(); // clear previous messages (in order to update screen)
+        initMessages(); // load messages
+    }
+
     /*
         Display old messages saved in db
         Input: None
@@ -207,6 +216,11 @@ public class ChatScreen extends CommunicationScreen{
 
     }
 
+    /*
+        Function changes the active button
+        Input: True if record is the active button, false otherwise
+        Output: None
+     */
     private void changeButtonsState(boolean isRecordClickable)
     {
         this.recordButton.setClickable(isRecordClickable);

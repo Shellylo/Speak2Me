@@ -21,7 +21,7 @@ public class Helper {
             try {
                 jsonMessage = new JSONObject(messages.get(i).toString()); //Get json object of a message
                 isMine = myPhone.equals(jsonMessage.get("src_phone")); // Check if source is mine
-                message = new Message(isMine ? (String)jsonMessage.get("dst_phone") : (String)jsonMessage.get("src_phone"), isMine, (String)jsonMessage.get("content"), isInChat); // Create the message object
+                message = new Message(-1, isMine ? (String)jsonMessage.get("dst_phone") : (String)jsonMessage.get("src_phone"), isMine, (String)jsonMessage.get("content"), isInChat); // Create the message object
                 ret.add(message);
             }
             catch (Exception e) {
