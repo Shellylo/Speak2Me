@@ -163,7 +163,8 @@ public class ChatScreen extends CommunicationScreen{
                     sendRecordReq.put("dst_phone", ChatScreen.this.dstPhone);
                     sendRecordReq.put("content", ChatScreen.this.inputText.getText());
 
-                    ChatScreen.this.client.send(sendRecordReq);
+                    ChatScreen.this.client.send(sendRecordReq); // Send text message to server
+                    ChatScreen.this.inputText.setText(""); // Clear typed text from text box in screen
                 }
                 catch (Exception e) {
                     System.out.println(e);
