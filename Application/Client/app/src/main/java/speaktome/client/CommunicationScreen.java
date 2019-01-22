@@ -87,9 +87,9 @@ public class CommunicationScreen extends GeneralScreen implements Runnable{
 
     protected void updateMessages(ArrayList<Message> messages)
     {
-        for (Message message : messages)
+        for (int i = 0; i < messages.size(); i++)
         {
-            this.sqlDB.insertMessage(message);
+            messages.get(i).setId(this.sqlDB.insertMessage(messages.get(i)));
         }
     }
 }

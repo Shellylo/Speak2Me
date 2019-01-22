@@ -39,6 +39,8 @@ public class RecordedMessagesScreen extends CommunicationScreen {
                 Intent data = new Intent();
                 data.putExtra("message", message.getText().toString());
                 setResult(RESULT_OK, data);
+                
+                RecordedMessagesScreen.this.sqlDB.removeMessage(message.getId()); // Remove message from database
                 finish();
             }
         };
@@ -57,17 +59,16 @@ public class RecordedMessagesScreen extends CommunicationScreen {
         ArrayList<Message> messages = this.sqlDB.getMessages(this.dstPhone, false);
         for (Message message : messages)
         {
-            addMessage(message.getContent());
+            addMessage(message.getContent(), message.getId());
         }
     }
 
     /*
         Push new messages at the bottom
-        TODO: start display from the bottom of the layout
-        Input: the message, is mine
+        Input: the message, message id
         Output: None
      */
-    public void addMessage(final String content)
+    public void addMessage(final String content, final int id)
     {
         runOnUiThread(new Runnable() {
             @Override
@@ -75,7 +76,7 @@ public class RecordedMessagesScreen extends CommunicationScreen {
                 TextView messageText = new TextView(RecordedMessagesScreen.this);
                 messageText.setText(content);
                 messageText.setClickable(true);
-
+                messageText.setId(id);
                 messageText.setOnClickListener(RecordedMessagesScreen.this.textViewListener);
                 RecordedMessagesScreen.this.messagesLayout.addView(messageText);
             }
@@ -95,7 +96,7 @@ public class RecordedMessagesScreen extends CommunicationScreen {
         {
             if (message.getPhone().equals(this.dstPhone) && !message.isInChat())
             {
-                addMessage(message.getContent());
+                addMessage(message.getContent(), message.getId());
             }
         }
     }
