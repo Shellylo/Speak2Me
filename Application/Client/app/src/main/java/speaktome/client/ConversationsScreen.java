@@ -10,6 +10,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class ConversationsScreen extends ContactsListScreen{
+    private boolean created; //Temporary solution for duplicate items in recycler view
+
     private Button addChatButton;
 
     @Override
@@ -17,22 +19,28 @@ public class ConversationsScreen extends ContactsListScreen{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversations_screen);
 
-        this.addChatButton = (Button) findViewById(R.id.ChatsStartChatButton);
+        this.created = true;
 
-        addChatListener();
+        this.addChatButton = (Button) findViewById(R.id.ChatsStartChatButton);
 
         this.contactsDetails = new ArrayList<ContactChatDetails>();
         this.initRecyclerDetails();
         this.rv = findViewById(R.id.ChatsList);
         initRecyclerView();
 
+        addChatListener();
         requestNewMessages();
     }
 
     public void onResume() {
         super.onResume();
-        this.initRecyclerDetails();
-        this.rv.getAdapter().notifyDataSetChanged();
+        if(!created) {
+            this.initRecyclerDetails();
+            this.rv.getAdapter().notifyDataSetChanged();
+        }
+        else {
+            created = false;
+        }
     }
 
     public void addChatListener()
