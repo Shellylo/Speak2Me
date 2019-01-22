@@ -39,8 +39,7 @@ public class RecordedMessagesScreen extends CommunicationScreen {
                 Intent data = new Intent();
                 data.putExtra("message", message.getText().toString());
                 setResult(RESULT_OK, data);
-
-                RecordedMessagesScreen.this.messagesLayout.removeView(v); // Remove message from screen
+                
                 RecordedMessagesScreen.this.sqlDB.removeMessage(message.getId()); // Remove message from database
                 finish();
             }
