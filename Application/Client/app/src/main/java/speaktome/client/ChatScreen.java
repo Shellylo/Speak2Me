@@ -1,7 +1,9 @@
 package speaktome.client;
 
 import android.content.Intent;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -139,12 +141,24 @@ public class ChatScreen extends CommunicationScreen{
             @Override
             public void onClick(View v) {
                 try {
+                    // Record audio from user in mp3 format
+                    MediaRecorder recorder = new MediaRecorder();
+                    recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                    recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+                    recorder.setOutputFile(Environment.getExternalStorageDirectory()
+                                           .getAbsolutePath() + "/messageRecord.mp3");
+                    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+                    recorder.prepare();
+                    recorder.start();
+
+                    // Prepare audio message request
                     JSONObject sendRecordReq = new JSONObject();
                     sendRecordReq.put("code", Codes.SPEECH_TO_TEXT_CODE);
                     sendRecordReq.put("src_phone", ChatScreen.this.srcPhone);
                     sendRecordReq.put("dst_phone", ChatScreen.this.dstPhone);
-                    sendRecordReq.put("content", "Very looooooooooooooooooooooooooooooooooooooong message wow wow coooooooool!! RANDOM NUMBER -- " + (int)(Math.random() * 50 + 1));
+                   // sendRecordReq.put("content", "Very looooooooooooooooooooooooooooooooooooooong message wow wow coooooooool!! RANDOM NUMBER -- " + (int)(Math.random() * 50 + 1));
 
+                    // Send message request
                     ChatScreen.this.client.send(sendRecordReq);
                 }
                 catch (Exception e) {
