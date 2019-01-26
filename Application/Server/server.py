@@ -4,8 +4,9 @@ from collections import deque
 import json
 import sqlite_database as sql_db
 import base64
+import re
 
-HOST = "localhost"
+HOST = "10.0.0.7"
 PORT_NUM = 3124
 
 MAX_QUEUE_CONNECTIONS = 5
@@ -32,6 +33,19 @@ ALREADY_CONNECTED_ERROR_CODE = 3
 INCORRECT_LOGIN_ERROR_CODE = 4
 SOURCE_INVALID_ERROR_CODE = 5
 DESTINATION_UNREACHABLE_ERROR_CODE = 6
+INCORRECT_SIGNUP_DETAILS_ERROR_CODE = 7
+
+def isPhoneCorrect(phone):
+	pattern = re.compile("^05[0-9]{8}$") #starts with 05 and contains 10 characters total
+	return bool(pattern.match(phone))
+	
+def isPasswordCorrect(password):
+	pattern = re.compile("(?=^[A-Za-z0-9]{4,}$)(?=^.*[A-Za-z].*$)") #contains only letters and numbers, contains at least 4 characters, contains at least 1 letter
+	return bool(pattern.match(password))
+	
+def isNameCorrect(name):
+	pattern = re.compile("^[A-Za-z][A-Za-z0-9]+$") #starts with a letter, can contain only letters and numbers, contains at least 2 characters
+	return bool(pattern.match(name))
 
 def message_details_exist(message):
 	''' Function checks if message has the necessary details: source phone, destination phone, content
@@ -168,6 +182,9 @@ def sign_up(db_connection, client_socket, message_dict):
 	if not ("phone" in message_dict and "password" in message_dict and "name" in message_dict): # Checks if details are missing
 		ans_messages_dict[client_socket] = { "code": DETAILS_MISSING_ERROR_CODE }
 		
+	elif not(isPhoneCorrect(message_dict["phone"]) and isPasswordCorrect(message_dict["password"]) and isNameCorrect(message_dict["name"])):
+		ans_messages_dict[client_socket] = { "code": INCORRECT_SIGNUP_DETAILS_ERROR_CODE }
+		
 	elif sql_db.does_user_exist(db_connection, message_dict["phone"]): # Checks if phone number already exists
 		ans_messages_dict[client_socket] = { "code": PHONE_EXISTS_ERROR_CODE }
 		
@@ -211,7 +228,7 @@ def client_handler(client_socket):
 	
 	except Exception, e:
 		user = "Unknown user"
-		ip, port = client_socket.getsockname()
+		ip, port = client_socket.getpeername()
 		#remove client from CONNECTED_CLIENTS if he is connected
 		for key, value in CONNECTED_CLIENTS.items():
 			if value == client_socket:

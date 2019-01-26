@@ -16,6 +16,7 @@ public class SignupScreen extends ErrorDisplayerScreen {
 
     private TextView detailsMissingError;
     private TextView phoneTakenError;
+    private TextView incorrectDetailsError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,8 @@ public class SignupScreen extends ErrorDisplayerScreen {
         this.displayName = (EditText)findViewById(R.id.SignUpNameBox);
         this.detailsMissingError = (TextView)findViewById(R.id.SignUpDetailsMissingError);
         this.phoneTakenError = (TextView)findViewById(R.id.SignUpPhoneTakenError);
+        this.incorrectDetailsError = (TextView)findViewById(R.id.SignUpIncorrectDetailsError);
+        this.phoneNumber.requestFocus();
 
         // Set listeners
         this.signUpListener();
@@ -71,6 +74,9 @@ public class SignupScreen extends ErrorDisplayerScreen {
                         break;
                     case Codes.PHONE_EXISTS_ERROR_CODE: // Phone already exists, sign up not completed
                         SignupScreen.super.updateError(SignupScreen.this.phoneTakenError);
+                        break;
+                    case Codes.INCORRECT_SIGNUP_DETAILS_ERROR_CODE:
+                        SignupScreen.super.updateError(SignupScreen.this.incorrectDetailsError);
                         break;
                 }
             }

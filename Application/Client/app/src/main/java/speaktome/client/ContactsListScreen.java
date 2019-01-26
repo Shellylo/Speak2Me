@@ -37,7 +37,7 @@ public class ContactsListScreen extends CommunicationScreen{
      */
     public ArrayList<ContactChatDetails> getContacts() {
         ContentResolver cr = this.getContentResolver(); //Activity/Application android.content.Context
-        Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+        Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
         ArrayList<ContactChatDetails> contacts = new ArrayList<ContactChatDetails>();
         ContactChatDetails contactDetails = null;
         if(cursor.moveToFirst()) {
@@ -45,10 +45,13 @@ public class ContactsListScreen extends CommunicationScreen{
                 String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
 
                 if (Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
-                    Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
+                    Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null); //TODO: CHECK IF WE NEED SECOND QUERY
                     if (pCur.moveToNext()) { // TODO: check if number has the application
                         String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                         contactNumber = contactNumber.replaceAll("\\D+","");
+                        if (contactNumber.startsWith("972")) {
+                            contactNumber = contactNumber.replaceFirst("972", "0");
+                        }
                         String contactName = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                         contactDetails = new ContactChatDetails(null, contactName, contactNumber, "");
                         contacts.add(contactDetails);
