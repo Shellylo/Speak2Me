@@ -79,6 +79,8 @@ public class RecordedMessagesScreen extends CommunicationScreen {
                 messageText.setId(id);
                 messageText.setOnClickListener(RecordedMessagesScreen.this.textViewListener);
                 RecordedMessagesScreen.this.messagesLayout.addView(messageText);
+
+                forceScrollDown();
             }
         });
 
@@ -99,6 +101,15 @@ public class RecordedMessagesScreen extends CommunicationScreen {
                 addMessage(message.getContent(), message.getId());
             }
         }
+    }
+
+    public void forceScrollDown() {
+        this.scrollview.post(new Runnable() {
+            @Override
+            public void run() {
+                RecordedMessagesScreen.this.scrollview.fullScroll(View.FOCUS_DOWN);
+            }
+        });
     }
 
     public void backListener() {

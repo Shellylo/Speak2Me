@@ -65,6 +65,7 @@ public class CommunicationScreen extends GeneralScreen implements Runnable{
                     else if((int)response.get("code") == Codes.SPEECH_TO_TEXT_CODE) {
                         messages = Helper.jsonArrayToList(response.getJSONArray("messages"), this.srcPhone, false);
                         this.updateMessages(messages);
+                        System.out.println("hi");
                     }
                 }
                 catch (Exception e) {
