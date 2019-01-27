@@ -1,22 +1,9 @@
 package speaktome.client;
 
-import android.Manifest;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.os.Build;
-import android.provider.ContactsContract;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Helper {
 
@@ -25,7 +12,7 @@ public class Helper {
         Input: the JSONArray
         Output: the array list of messages
      */
-    public static ArrayList<Message> jsonArrayToList(JSONArray messages, String myPhone) {
+    public static ArrayList<Message> jsonArrayToList(JSONArray messages, String myPhone, boolean isInChat) {
         ArrayList<Message> ret = new ArrayList<Message>();
         JSONObject jsonMessage;
         boolean isMine;
@@ -34,7 +21,7 @@ public class Helper {
             try {
                 jsonMessage = new JSONObject(messages.get(i).toString()); //Get json object of a message
                 isMine = myPhone.equals(jsonMessage.get("src_phone")); // Check if source is mine
-                message = new Message(isMine ? (String)jsonMessage.get("dst_phone") : (String)jsonMessage.get("src_phone"), isMine, (String)jsonMessage.get("content")); // Create the message object
+                message = new Message(-1, isMine ? (String)jsonMessage.get("dst_phone") : (String)jsonMessage.get("src_phone"), isMine, (String)jsonMessage.get("content"), isInChat); // Create the message object
                 ret.add(message);
             }
             catch (Exception e) {

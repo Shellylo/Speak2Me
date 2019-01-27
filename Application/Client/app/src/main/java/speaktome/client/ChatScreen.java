@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -23,10 +24,12 @@ public class ChatScreen extends CommunicationScreen{
     private ScrollView scrollScreen;
     private LinearLayout chatLayout;
 
+    private TextView chatTitle;
     private EditText inputText;
 
     private Button recordButton;
     private Button sendButton;
+    private ImageButton recordedMessagesButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,17 +43,30 @@ public class ChatScreen extends CommunicationScreen{
 
         // Set widgets
         this.scrollScreen = (ScrollView) findViewById(R.id.ChatMessages);
-        this.chatLayout = (LinearLayout) findViewById(R.id.ChatLayout);;
+        this.chatLayout = (LinearLayout) findViewById(R.id.ChatLayout);
+        this.chatTitle = (TextView) findViewById(R.id.ChatNameTitle);
+        this.chatTitle.setText(this.dstName); // Insert contact name into chat title
         this.inputText = (EditText) findViewById(R.id.ChatMessageInput);
         this.recordButton = (Button) findViewById(R.id.ChatRecordButton);
         this.sendButton = (Button) findViewById(R.id.ChatSendButton);
+        this.recordedMessagesButton = (ImageButton) findViewById(R.id.ChatRecordedMessagesButton);
         this.sendButton.setClickable(false);
 
-        // Load messages and activate record button listener
-        initMessages(); // Display messages history of current chat
+        // Activate listeners
         recordListener();
         textListener();
+        sendButtonListener();
+        recordedMessagesListener();
 
+    }
+
+    public void onResume()
+    {
+        super.onResume();
+
+        // Reload screen with updated messages
+        this.chatLayout.removeAllViews(); // clear previous messages (in order to update screen)
+        initMessages(); // load messages
     }
 
     /*
@@ -60,7 +76,7 @@ public class ChatScreen extends CommunicationScreen{
      */
     public void initMessages()
     {
-        ArrayList<Message> messages = this.sqlDB.getMessages(this.dstPhone);
+        ArrayList<Message> messages = this.sqlDB.getMessages(this.dstPhone, true);
         for (Message message : messages)
         {
             addMessage(message.getContent(), message.isMine());
@@ -89,6 +105,8 @@ public class ChatScreen extends CommunicationScreen{
                     messageText.setGravity(Gravity.LEFT);
                 }
                 ChatScreen.this.chatLayout.addView(messageText);
+
+                forceScrollDown();
             }
         });
 
@@ -104,21 +122,70 @@ public class ChatScreen extends CommunicationScreen{
         super.updateMessages(messages);
         for (Message message : messages)
         {
-            if (message.getPhone().equals(this.dstPhone))
+            if (message.getPhone().equals(this.dstPhone) && message.isInChat())
             {
                 addMessage(message.getContent(), message.isMine());
             }
         }
     }
 
+    public void forceScrollDown() {
+        this.scrollScreen.post(new Runnable() {
+            @Override
+            public void run() {
+                ChatScreen.this.scrollScreen.fullScroll(View.FOCUS_DOWN);
+            }
+        });
+    }
+
+
     /*
-        Function listens to sign up button. When clicked, receives record and sends it to server
+        Function listens record button. When clicked, receives record and sends it to server
         Input: None
         Output: None
      */
-    public void recordListener()
+    private void recordListener()
     {
         this.recordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    // Record audio from user in mp3 format
+                    /*MediaRecorder recorder = new MediaRecorder();
+                    recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                    recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+                    recorder.setOutputFile(Environment.getExternalStorageDirectory()
+                                           .getAbsolutePath() + "/messageRecord.mp3");
+                    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+                    recorder.prepare();
+                    recorder.start();*/
+
+                    // Prepare audio message request
+                    JSONObject sendRecordReq = new JSONObject();
+                    sendRecordReq.put("code", Codes.SPEECH_TO_TEXT_CODE);
+                    sendRecordReq.put("src_phone", ChatScreen.this.srcPhone);
+                    sendRecordReq.put("dst_phone", ChatScreen.this.dstPhone);
+                    sendRecordReq.put("content", "Very looooooooooooooooooooooooooooooooooooooong message wow wow coooooooool!! RANDOM NUMBER -- " + (int)(Math.random() * 50 + 1));
+
+                    // Send message request
+                    ChatScreen.this.client.send(sendRecordReq);
+                }
+                catch (Exception e) {
+                    System.out.println(e);
+                }
+            }
+        });
+    }
+
+    /*
+        Function listens to send message button.
+        When clicked, receives typed text in text box and sends it to server.
+        Input: None
+        Output: None
+     */
+    private void sendButtonListener()
+    {
+        this.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
@@ -126,9 +193,11 @@ public class ChatScreen extends CommunicationScreen{
                     sendRecordReq.put("code", Codes.SEND_TEXT_MESSAGE_CODE);
                     sendRecordReq.put("src_phone", ChatScreen.this.srcPhone);
                     sendRecordReq.put("dst_phone", ChatScreen.this.dstPhone);
-                    sendRecordReq.put("content", "Very looooooooooooooooooooooooooooooooooooooong message wow wow coooooooool!! RANDOM NUMBER -- " + (int)(Math.random() * 50 + 1));
+                    sendRecordReq.put("content", ChatScreen.this.inputText.getText());
 
-                    ChatScreen.this.client.send(sendRecordReq);
+                    ChatScreen.this.client.send(sendRecordReq); // Send text message to server
+                    ChatScreen.this.inputText.setText(""); // Clear typed text from text box in screen
+
                 }
                 catch (Exception e) {
                     System.out.println(e);
@@ -159,10 +228,10 @@ public class ChatScreen extends CommunicationScreen{
             @Override
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
-                if(s.length() != 0) {
+                if(s.length() != 0) { // Input was inserted, record button invisible
                     changeButtonsState(false);
                 }
-                else {
+                else { // Input box is empty, record button visible
                     changeButtonsState(true);
                 }
             }
@@ -170,10 +239,46 @@ public class ChatScreen extends CommunicationScreen{
 
     }
 
+    /*
+        Function changes the active button
+        Input: True if record is the active button, false otherwise
+        Output: None
+     */
     private void changeButtonsState(boolean isRecordClickable)
     {
         this.recordButton.setClickable(isRecordClickable);
         this.sendButton.setClickable(!isRecordClickable);
         this.recordButton.setVisibility(isRecordClickable ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    /*
+        Function listens recorded messages button button. When clicked, start recorded messages screen
+        Input: None
+        Output: None
+     */
+    public void recordedMessagesListener()
+    {
+        this.recordedMessagesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChatScreen.this, RecordedMessagesScreen.class);
+                intent.putExtra("src_phone", ChatScreen.this.srcPhone);
+                intent.putExtra("dst_phone", ChatScreen.this.dstPhone);
+                startActivityForResult(intent,0);
+            }
+        });
+    }
+
+    /*
+        Function waits for result from recorded messages activity
+        Input: request code, result code, and data
+        Output: None
+     */
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 0) {
+            if (resultCode == RESULT_OK) {
+                this.inputText.setText(data.getStringExtra("message"));
+            }
+        }
     }
 }

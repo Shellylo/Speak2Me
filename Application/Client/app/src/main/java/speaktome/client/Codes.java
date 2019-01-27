@@ -19,4 +19,5 @@ public class Codes {
     static final int INCORRECT_LOGIN_ERROR_CODE = 4;
     static final int SOURCE_INVALID_ERROR_CODE = 5;
     static final int DESTINATION_UNREACHABLE_ERROR_CODE = 6;
+    static final int INCORRECT_SIGNUP_DETAILS_ERROR_CODE = 7;
 }

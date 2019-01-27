@@ -1,14 +1,19 @@
 package speaktome.client;
 
 public class Message {
+    private int id;
     private String phone;
     private boolean isMine;
     private String content;
+    private boolean isInChat;
 
-    public Message(String phone, boolean isMine, String content) {
+    public Message(int id, String phone, boolean isMine, String content, boolean isInChat) {
+        this.id = id;
         this.phone = phone;
         this.isMine = isMine;
         this.content = content;
+        this.isInChat = isInChat;
+
     }
 
     /*
@@ -36,5 +41,34 @@ public class Message {
      */
     public String getContent() {
         return this.content;
+    }
+
+    /*
+        Function returns if message in chat
+        Input: None
+        Output: if message is in chat
+     */
+    public boolean isInChat() {
+        return isInChat;
+    }
+
+    /*
+        Function returns message id
+        Input: None
+        Output: Message id
+     */
+    public int getId()
+    {
+        return this.id;
+    }
+
+    /*
+        Function sets message id
+        Input: id
+        Output: None
+     */
+    public void setId(int id)
+    {
+        this.id = id;
     }
 }

@@ -41,7 +41,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
         ContactChatDetails currentDetails = this.layoutItems.get(i);
-        viewHolder.contactImage = currentDetails.getContactImage();
+        viewHolder.contactImage.setImageResource(R.drawable.profile_picture); //TODO: get image from contact
         viewHolder.contactName.setText(currentDetails.getContactName());
         viewHolder.contactPhone.setText(currentDetails.getContactPhone());
         viewHolder.message.setText(currentDetails.getMessage());

@@ -10,6 +10,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class ConversationsScreen extends ContactsListScreen{
+    private boolean created; //Temporary solution for duplicate items in recycler view
+
     private Button addChatButton;
 
     @Override
@@ -17,22 +19,28 @@ public class ConversationsScreen extends ContactsListScreen{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversations_screen);
 
+        this.created = true;
+
         this.addChatButton = (Button) findViewById(R.id.ChatsStartChatButton);
 
-        addChatListener();
-
         this.contactsDetails = new ArrayList<ContactChatDetails>();
-        initRecyclerDetails();
+        this.initRecyclerDetails();
         this.rv = findViewById(R.id.ChatsList);
         initRecyclerView();
 
+        addChatListener();
         requestNewMessages();
     }
 
     public void onResume() {
         super.onResume();
-        initRecyclerDetails();
-        this.rv.getAdapter().notifyDataSetChanged();
+        if(!created) {
+            this.initRecyclerDetails();
+            this.rv.getAdapter().notifyDataSetChanged();
+        }
+        else {
+            created = false;
+        }
     }
 
     public void addChatListener()
@@ -54,8 +62,17 @@ public class ConversationsScreen extends ContactsListScreen{
      */
     public void initRecyclerDetails() {
         this.contactsDetails.clear();
-        //ArrayList<ItemDetails> contacts = this.sqlDB.getTopMessages();
-        this.contactsDetails.addAll(this.sqlDB.getTopMessages());
+        ArrayList<ContactChatDetails> messages = this.sqlDB.getTopMessages();
+        ArrayList<ContactChatDetails> contacts = super.getContacts();
+        for (int i = 0; i < messages.size(); i++) {
+            for(int k = 0; k < contacts.size(); k++) {
+                if(messages.get(i).getContactPhone().equals(contacts.get(k).getContactPhone())) {
+                    messages.get(i).setContactName(contacts.get(k).getContactName());
+                    break;
+                }
+            }
+        }
+        this.contactsDetails.addAll(messages);
     }
 
     /*

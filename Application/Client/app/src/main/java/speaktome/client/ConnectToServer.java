@@ -8,7 +8,7 @@ import java.net.Socket;
 
 public class ConnectToServer implements Runnable{
     private static final int SERVER_PORT = 3124;
-    private static final String SERVER_IP = "10.0.2.2"; //109.66.49.231, 37.26.148.239, 79.176.69.249
+    private static final String SERVER_IP = "79.177.3.169"; //10.0.0.2
 
     private Socket clientSocket;
     private DataOutputStream out;

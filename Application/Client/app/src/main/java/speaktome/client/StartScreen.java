@@ -52,7 +52,7 @@ public class StartScreen extends ErrorDisplayerScreen {
             public void onClick(View v) {
 
                 // Clear errors
-                StartScreen.super.updateError(null);
+                clearScreen();
                 Intent intent = new Intent(StartScreen.this, SignupScreen.class);
                 startActivity(intent);
             }
@@ -110,5 +110,11 @@ public class StartScreen extends ErrorDisplayerScreen {
                 }
             }
         });
+    }
+
+    public void clearScreen() {
+        super.updateError(null);
+        this.phoneNumber.setText("");
+        this.password.setText("");
     }
 }
