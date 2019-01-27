@@ -6,7 +6,7 @@ import sqlite_database as sql_db
 import base64
 import re
 
-HOST = "10.0.0.7"
+HOST = "192.168.42.207" #10.0.0.7, localhost
 PORT_NUM = 3124
 
 MAX_QUEUE_CONNECTIONS = 5

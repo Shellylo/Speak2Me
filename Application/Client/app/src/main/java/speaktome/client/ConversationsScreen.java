@@ -35,8 +35,13 @@ public class ConversationsScreen extends ContactsListScreen{
     public void onResume() {
         super.onResume();
         if(!created) {
-            this.initRecyclerDetails();
-            this.rv.getAdapter().notifyDataSetChanged();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ConversationsScreen.this.initRecyclerDetails();
+                    ConversationsScreen.this.rv.getAdapter().notifyDataSetChanged();
+                }
+            });
         }
         else {
             created = false;
@@ -100,7 +105,12 @@ public class ConversationsScreen extends ContactsListScreen{
      */
     protected void updateMessages(ArrayList<Message> messages) {
         super.updateMessages(messages);
-        this.initRecyclerDetails();
-        this.rv.getAdapter().notifyDataSetChanged();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ConversationsScreen.this.initRecyclerDetails();
+                ConversationsScreen.this.rv.getAdapter().notifyDataSetChanged();
+            }
+        });
     }
 }
