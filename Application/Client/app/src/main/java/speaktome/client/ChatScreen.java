@@ -74,7 +74,7 @@ public class ChatScreen extends CommunicationScreen{
         Input: None
         Output: None
      */
-    public void initMessages()
+    private void initMessages()
     {
         ArrayList<Message> messages = this.sqlDB.getMessages(this.dstPhone, true);
         for (Message message : messages)
@@ -89,7 +89,7 @@ public class ChatScreen extends CommunicationScreen{
         Input: the message, is mine
         Output: None
      */
-    public void addMessage(final String content, final Boolean isMine)
+    private void addMessage(final String content, final Boolean isMine)
     {
         runOnUiThread(new Runnable() {
             @Override
@@ -129,7 +129,12 @@ public class ChatScreen extends CommunicationScreen{
         }
     }
 
-    public void forceScrollDown() {
+    /*
+        Forces screen to scroll down
+        Input: None
+        Output: None
+     */
+    private void forceScrollDown() {
         this.scrollScreen.post(new Runnable() {
             @Override
             public void run() {
@@ -256,7 +261,7 @@ public class ChatScreen extends CommunicationScreen{
         Input: None
         Output: None
      */
-    public void recordedMessagesListener()
+    private void recordedMessagesListener()
     {
         this.recordedMessagesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -274,7 +279,7 @@ public class ChatScreen extends CommunicationScreen{
         Input: request code, result code, and data
         Output: None
      */
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
                 this.inputText.setText(data.getStringExtra("message"));

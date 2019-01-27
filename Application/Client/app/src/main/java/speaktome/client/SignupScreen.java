@@ -42,7 +42,7 @@ public class SignupScreen extends ErrorDisplayerScreen {
         Input: None
         Output: None
      */
-    public void signUpListener()
+    private void signUpListener()
     {
         this.signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override

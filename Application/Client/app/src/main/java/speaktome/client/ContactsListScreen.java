@@ -24,7 +24,7 @@ public class ContactsListScreen extends CommunicationScreen{
         Input: None
         Output: None
      */
-    public void initRecyclerView(){
+    protected void initRecyclerView(){
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(this.contactsDetails, this, this.srcPhone);
         this.rv.setAdapter(adapter);
         this.rv.setLayoutManager(new LinearLayoutManager(this));
@@ -35,7 +35,7 @@ public class ContactsListScreen extends CommunicationScreen{
         Input: Current screen context
         Output: List of contacts
      */
-    public ArrayList<ContactChatDetails> getContacts() {
+    protected ArrayList<ContactChatDetails> getContacts() {
         ContentResolver cr = this.getContentResolver(); //Activity/Application android.content.Context
         Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
         ArrayList<ContactChatDetails> contacts = new ArrayList<ContactChatDetails>();

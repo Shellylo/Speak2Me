@@ -46,7 +46,7 @@ public class StartScreen extends ErrorDisplayerScreen {
         Input: None
         Output: None
      */
-    public void signUpListener() {
+    private void signUpListener() {
         this.signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,7 +64,7 @@ public class StartScreen extends ErrorDisplayerScreen {
         Input: None
         Output: None
      */
-    public void logInListener() {
+    private void logInListener() {
         this.logInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,7 +112,7 @@ public class StartScreen extends ErrorDisplayerScreen {
         });
     }
 
-    public void clearScreen() {
+    private void clearScreen() {
         super.updateError(null);
         this.phoneNumber.setText("");
         this.password.setText("");

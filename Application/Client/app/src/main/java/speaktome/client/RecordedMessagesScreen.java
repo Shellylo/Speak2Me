@@ -54,7 +54,7 @@ public class RecordedMessagesScreen extends CommunicationScreen {
         Input: None
         Output: None
      */
-    public void initMessages()
+    private void initMessages()
     {
         ArrayList<Message> messages = this.sqlDB.getMessages(this.dstPhone, false);
         for (Message message : messages)
@@ -68,7 +68,7 @@ public class RecordedMessagesScreen extends CommunicationScreen {
         Input: the message, message id
         Output: None
      */
-    public void addMessage(final String content, final int id)
+    private void addMessage(final String content, final int id)
     {
         runOnUiThread(new Runnable() {
             @Override
@@ -103,7 +103,12 @@ public class RecordedMessagesScreen extends CommunicationScreen {
         }
     }
 
-    public void forceScrollDown() {
+    /*
+       Forces screen to scroll down
+       Input: None
+       Output: None
+    */
+    private void forceScrollDown() {
         this.scrollview.post(new Runnable() {
             @Override
             public void run() {
@@ -112,7 +117,12 @@ public class RecordedMessagesScreen extends CommunicationScreen {
         });
     }
 
-    public void backListener() {
+    /*
+        Listens to down button (back)
+        Input: None
+        Output: None
+     */
+    private void backListener() {
         this.backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
