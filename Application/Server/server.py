@@ -6,7 +6,7 @@ import sqlite_database as sql_db
 import base64
 import re
 
-HOST = "192.168.42.207" #10.0.0.7, localhost
+HOST = "192.168.42.33" #10.0.0.7, localhost
 PORT_NUM = 3124
 
 MAX_QUEUE_CONNECTIONS = 5
@@ -87,7 +87,10 @@ def speech_to_text(db_connection, client_socket, message_dict):
 		ans_messages_dict[client_socket] = { "code": SOURCE_INVALID_ERROR_CODE }
 		
 	else:
-		#audio_file_data = base64.b64decode(message_dict["content"]) # decode file data
+		audio_file = open("test.mp3", "w") # create mp3 file
+		print message_dict["content"]
+		audio_file.write(message_dict["content"].decode("base64"))
+		audio_file.close()
 		# Speech to text - to do
 		ans_messages_dict[client_socket] = { "code": SPEECH_TO_TEXT_CODE, "messages": [{"src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": message_dict["content"]}] }
 		
@@ -219,7 +222,7 @@ def client_handler(client_socket):
 
 			# Receiving data from the client
 			client_message = client_socket.recv(message_size)
-
+			print client_message
 			# Add message to messages queue with client's socket
 			MESSAGES_QUEUE.append((client_socket, client_message))
 		

@@ -1,7 +1,10 @@
 package speaktome.client;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -12,10 +15,18 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.util.Base64;
 
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class ChatScreen extends CommunicationScreen{
     private String dstPhone;
@@ -151,21 +162,47 @@ public class ChatScreen extends CommunicationScreen{
             public void onClick(View v) {
                 try {
                     // Record audio from user in mp3 format
-                    /*MediaRecorder recorder = new MediaRecorder();
+                    MediaRecorder recorder = new MediaRecorder();
                     recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
                     recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
                     recorder.setOutputFile(Environment.getExternalStorageDirectory()
                                            .getAbsolutePath() + "/messageRecord.mp3");
                     recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
                     recorder.prepare();
-                    recorder.start();*/
+                    recorder.start();
+
+                    TimeUnit.SECONDS.sleep(5);
+                    recorder.stop();
+
+                    File file = new File(Environment.getExternalStorageDirectory()
+                                         .getAbsolutePath() + "/messageRecord.mp3");
+                    int size = (int) file.length();
+                    byte[] bytes = new byte[size];
+                    BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+                    buf.read(bytes, 0, bytes.length);
+                    buf.close();
+                    String content = Base64.encodeToString(bytes, Base64.DEFAULT);
+
+                    // Play record
+              /*      MediaPlayer mediaPlayer = new MediaPlayer();
+                    try {
+                        mediaPlayer.setDataSource(Environment.getExternalStorageDirectory()
+                                                  .getAbsolutePath() + "/messageRecord.mp3");
+                        mediaPlayer.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    mediaPlayer.start();
+                    */
+
 
                     // Prepare audio message request
                     JSONObject sendRecordReq = new JSONObject();
                     sendRecordReq.put("code", Codes.SPEECH_TO_TEXT_CODE);
                     sendRecordReq.put("src_phone", ChatScreen.this.srcPhone);
                     sendRecordReq.put("dst_phone", ChatScreen.this.dstPhone);
-                    sendRecordReq.put("content", "Very looooooooooooooooooooooooooooooooooooooong message wow wow coooooooool!! RANDOM NUMBER -- " + (int)(Math.random() * 50 + 1));
+                    sendRecordReq.put("content", content);
 
                     // Send message request
                     ChatScreen.this.client.send(sendRecordReq);
@@ -281,4 +318,7 @@ public class ChatScreen extends CommunicationScreen{
             }
         }
     }
+
+
+
 }
