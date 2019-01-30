@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import socket
 import thread
 from collections import deque
@@ -5,12 +6,16 @@ import json
 import sqlite_database as sql_db
 import base64
 import re
+import speech_recognition
+from pydub import AudioSegment
 
 HOST = "192.168.1.13" #10.0.0.7, localhost
 PORT_NUM = 3124
 
 MAX_QUEUE_CONNECTIONS = 5
 MAX_SIZE_LEN = 10
+
+MP3_FILE_ENDING_LEN = -4
 
 MESSAGES_QUEUE = deque()
 CONNECTED_CLIENTS = {}
@@ -70,6 +75,25 @@ def is_socket_phone_connected(client_socket, phone):
 	'''
 	return client_socket in CONNECTED_CLIENTS.values() or phone in CONNECTED_CLIENTS
 	
+def mp3_to_wav(audio_path):
+	sound = AudioSegment.from_file(audio_path, "aac")
+	print "hello"
+	audio_path = audio_path[:MP3_FILE_ENDING_LEN] + ".wav"
+	sound.export(audio_path, format="wav")
+	print audio_path
+	return audio_path
+	
+def voice_recognition(audio_path):
+	print "hi!"
+	recognizer = speech_recognition.Recognizer()
+
+	with speech_recognition.AudioFile(audio_path) as source:
+		audio = recognizer.record(source)
+		
+	text_message = rec.recognize_google(audio, language="en") #.encode("UTF-8") -he
+	print text_message
+	return text_message
+	
 def speech_to_text(db_connection, client_socket, message_dict):
 	'''
 		Function receives audio and transfers it into text.
@@ -87,12 +111,17 @@ def speech_to_text(db_connection, client_socket, message_dict):
 		ans_messages_dict[client_socket] = { "code": SOURCE_INVALID_ERROR_CODE }
 		
 	else:
-		audio_file = open("test.mp3", "w+b") # create mp3 file
+		# Create mp3 file which contains the record
+		audio_path = message_dict["src_phone"] + ".3gp"
+		audio_file = open(audio_path, "w+b")
 		audio_file.write(message_dict["content"].decode("base64"))
 		audio_file.close()
 		
-		# Speech to text - to do
-		ans_messages_dict[client_socket] = { "code": SPEECH_TO_TEXT_CODE, "messages": [{"src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": message_dict["content"]}] }
+		# Convert mp3 file to wav file and recognize voice
+		audio_path = mp3_to_wav(audio_path)		
+		text_message = voice_recognition(audio_path)
+		
+		ans_messages_dict[client_socket] = { "code": SPEECH_TO_TEXT_CODE, "messages": [{"src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": text_message}] }
 		
 	return ans_messages_dict
 
@@ -233,11 +262,9 @@ def client_handler(client_socket):
 		while True:
 			# Receiving data size from client
 			message_size = int(client_socket.recv(MAX_SIZE_LEN))
-			print message_size
 			
 			# Receiving data from the client
 			client_message = recvall(client_socket, message_size)
-			print client_message
 			
 			# Add message to messages queue with client's socket
 			MESSAGES_QUEUE.append((client_socket, client_message))
