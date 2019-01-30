@@ -182,9 +182,10 @@ public class ChatScreen extends CommunicationScreen{
                     buf.read(bytes, 0, bytes.length);
                     buf.close();
                     String content = Base64.encodeToString(bytes, Base64.DEFAULT);
+                    int contentSize = content.length();
 
                     // Play record
-              /*      MediaPlayer mediaPlayer = new MediaPlayer();
+                 /*   MediaPlayer mediaPlayer = new MediaPlayer();
                     try {
                         mediaPlayer.setDataSource(Environment.getExternalStorageDirectory()
                                                   .getAbsolutePath() + "/messageRecord.mp3");
@@ -193,8 +194,7 @@ public class ChatScreen extends CommunicationScreen{
                         e.printStackTrace();
                     }
 
-                    mediaPlayer.start();
-                    */
+                    mediaPlayer.start();*/
 
 
                     // Prepare audio message request
@@ -202,7 +202,8 @@ public class ChatScreen extends CommunicationScreen{
                     sendRecordReq.put("code", Codes.SPEECH_TO_TEXT_CODE);
                     sendRecordReq.put("src_phone", ChatScreen.this.srcPhone);
                     sendRecordReq.put("dst_phone", ChatScreen.this.dstPhone);
-                    sendRecordReq.put("content", content);
+                    sendRecordReq.put("content_size", contentSize);
+                    sendRecordReq.put("content_temp", content); // In order to pass content into sending function
 
                     // Send message request
                     ChatScreen.this.client.send(sendRecordReq);
