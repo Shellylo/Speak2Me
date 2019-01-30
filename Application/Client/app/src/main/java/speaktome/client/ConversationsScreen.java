@@ -48,7 +48,7 @@ public class ConversationsScreen extends ContactsListScreen{
         }
     }
 
-    public void addChatListener()
+    private void addChatListener()
     {
         this.addChatButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +65,7 @@ public class ConversationsScreen extends ContactsListScreen{
         Input: None
         Output: None
      */
-    public void initRecyclerDetails() {
+    private void initRecyclerDetails() {
         this.contactsDetails.clear();
         ArrayList<ContactChatDetails> messages = this.sqlDB.getTopMessages();
         ArrayList<ContactChatDetails> contacts = super.getContacts();
@@ -85,7 +85,7 @@ public class ConversationsScreen extends ContactsListScreen{
         Input: None
         Output: None
      */
-    public void requestNewMessages() {
+    private void requestNewMessages() {
         try {
             JSONObject getMessagesRequest = new JSONObject();
             getMessagesRequest.put("code", Codes.RECEIVE_MESSAGES_CODE);
