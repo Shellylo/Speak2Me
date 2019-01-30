@@ -9,7 +9,7 @@ import re
 import speech_recognition
 from pydub import AudioSegment
 
-HOST = "192.168.1.13" #10.0.0.7, localhost
+HOST = "10.0.0.7" #10.0.0.7, localhost
 PORT_NUM = 3124
 
 MAX_QUEUE_CONNECTIONS = 5
