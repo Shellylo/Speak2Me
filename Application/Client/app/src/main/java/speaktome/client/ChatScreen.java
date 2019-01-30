@@ -1,6 +1,8 @@
 package speaktome.client;
 
 import android.content.Intent;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -167,15 +169,16 @@ public class ChatScreen extends CommunicationScreen{
                     recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
                     recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
                     recorder.setOutputFile(Environment.getExternalStorageDirectory()
-                            .getAbsolutePath() + "/messageRecord.mp3");
+                            .getAbsolutePath() + "/messageRecord.m4a");
                     recorder.prepare();
                     recorder.start();
 
-                    TimeUnit.SECONDS.sleep(5);
+                    TimeUnit.SECONDS.sleep(15);
                     recorder.stop();
+                    recorder.release();
 
                     File file = new File(Environment.getExternalStorageDirectory()
-                                         .getAbsolutePath() + "/messageRecord.mp3");
+                                         .getAbsolutePath() + "/messageRecord.m4a");
                     int size = (int) file.length();
                     byte[] bytes = new byte[size];
                     BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
