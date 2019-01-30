@@ -202,8 +202,9 @@ public class ChatScreen extends CommunicationScreen{
                     sendRecordReq.put("code", Codes.SPEECH_TO_TEXT_CODE);
                     sendRecordReq.put("src_phone", ChatScreen.this.srcPhone);
                     sendRecordReq.put("dst_phone", ChatScreen.this.dstPhone);
-                    sendRecordReq.put("content_size", contentSize);
-                    sendRecordReq.put("content_temp", content); // In order to pass content into sending function
+                    sendRecordReq.put("content", content);
+                  //  sendRecordReq.put("content_size", contentSize);
+                //    sendRecordReq.put("content_temp", content); // In order to pass content into sending function
 
                     // Send message request
                     ChatScreen.this.client.send(sendRecordReq);

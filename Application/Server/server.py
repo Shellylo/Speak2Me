@@ -90,6 +90,7 @@ def speech_to_text(db_connection, client_socket, message_dict):
 		audio_file = open("test.mp3", "w+b") # create mp3 file
 		audio_file.write(message_dict["content"].decode("base64"))
 		audio_file.close()
+		
 		# Speech to text - to do
 		ans_messages_dict[client_socket] = { "code": SPEECH_TO_TEXT_CODE, "messages": [{"src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": message_dict["content"]}] }
 		
@@ -215,6 +216,7 @@ def handle_requests(db_connection):
 	while True:
 		if MESSAGES_QUEUE: # There are messages waiting
 			client_socket, message_dict = MESSAGES_QUEUE.popleft() # Receive first message in dict format
+			message_dict = json.loads(message_dict)
 			ans_messages_dict = OPERATIONS_DICT[message_dict["code"]](db_connection, client_socket, message_dict)
 			for socket in ans_messages_dict.keys():
 				response = json.dumps(ans_messages_dict[socket])
@@ -232,15 +234,10 @@ def client_handler(client_socket):
 			# Receiving data size from client
 			message_size = int(client_socket.recv(MAX_SIZE_LEN))
 			print message_size
-			# Receiving data from the client
-			client_message = client_socket.recv(message_size)
-			print client_message
 			
-			client_message = json.loads(client_message)
-			if client_message["code"] == SPEECH_TO_TEXT_CODE:
-				content = recvall(client_socket, client_message["content_size"])
-				print content
-				client_message["content"] = content
+			# Receiving data from the client
+			client_message = recvall(client_socket, message_size)
+			print client_message
 			
 			# Add message to messages queue with client's socket
 			MESSAGES_QUEUE.append((client_socket, client_message))

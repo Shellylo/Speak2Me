@@ -31,18 +31,18 @@ public class OutputMessages implements Runnable{
             while (true) {
                 while(!this.conversationFlow.isEmpty()) {
                     JSONObject msgToSend = this.conversationFlow.remove();
-                    String content = "";
+                    /*String content = "";
                     if (msgToSend.getInt("code") == Codes.SPEECH_TO_TEXT_CODE) {
                         content = msgToSend.getString("content_temp");
                         msgToSend.remove("content_temp");
-                    }
+                    } */
                     String strRequest = msgToSend.toString();
                     System.out.println("PRINTING: " + strRequest);
                     this.out.write(String.format("%010d", strRequest.length()).getBytes()); //Sends message size
                     this.out.write(strRequest.getBytes("UTF-8")); //Sends message
-                    if (msgToSend.getInt("code") == Codes.SPEECH_TO_TEXT_CODE) {
+                    /*if (msgToSend.getInt("code") == Codes.SPEECH_TO_TEXT_CODE) {
                         this.out.write(content.getBytes("UTF-8"));
-                    }
+                    }*/
                 }
             }
         }
