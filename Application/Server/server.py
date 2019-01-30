@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import socket
 import thread
 from collections import deque
@@ -5,12 +6,16 @@ import json
 import sqlite_database as sql_db
 import base64
 import re
+import speech_recognition
+from pydub import AudioSegment
 
-HOST = "192.168.42.207" #10.0.0.7, localhost
+HOST = "192.168.1.13" #10.0.0.7, localhost
 PORT_NUM = 3124
 
 MAX_QUEUE_CONNECTIONS = 5
 MAX_SIZE_LEN = 10
+
+M4A_FILE_ENDING_LEN = -4
 
 MESSAGES_QUEUE = deque()
 CONNECTED_CLIENTS = {}
@@ -70,6 +75,21 @@ def is_socket_phone_connected(client_socket, phone):
 	'''
 	return client_socket in CONNECTED_CLIENTS.values() or phone in CONNECTED_CLIENTS
 	
+def m4a_to_wav(audio_path):
+	sound = AudioSegment.from_file(audio_path, format="m4a")
+	audio_path = audio_path[:M4A_FILE_ENDING_LEN] + ".wav"
+	sound.export(audio_path, format="wav")
+	return audio_path
+	
+def voice_recognition(audio_path):
+	recognizer = speech_recognition.Recognizer()
+
+	with speech_recognition.AudioFile(audio_path) as source:
+		audio = recognizer.record(source)
+	text_message = recognizer.recognize_google(audio, language="en") #.encode("UTF-8") -he
+
+	return text_message
+	
 def speech_to_text(db_connection, client_socket, message_dict):
 	'''
 		Function receives audio and transfers it into text.
@@ -87,9 +107,21 @@ def speech_to_text(db_connection, client_socket, message_dict):
 		ans_messages_dict[client_socket] = { "code": SOURCE_INVALID_ERROR_CODE }
 		
 	else:
-		#audio_file_data = base64.b64decode(message_dict["content"]) # decode file data
-		# Speech to text - to do
-		ans_messages_dict[client_socket] = { "code": SPEECH_TO_TEXT_CODE, "messages": [{"src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": message_dict["content"]}] }
+		# Create mp3 file which contains the record
+		audio_path = message_dict["src_phone"] + ".m4a"
+		audio_file = open(audio_path, "w+b")
+		audio_file.write(message_dict["content"].decode("base64"))
+		audio_file.close()
+		
+		text_message = "Error: could not recognize" # TODO: error message
+		try:
+			# Convert mp3 file to wav file and recognize voice
+			audio_path = m4a_to_wav(audio_path)		
+			text_message = voice_recognition(audio_path)
+		except Exception, e:
+			print "Error:", e
+		
+		ans_messages_dict[client_socket] = { "code": SPEECH_TO_TEXT_CODE, "messages": [{"src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": text_message}] }
 		
 	return ans_messages_dict
 
@@ -194,17 +226,34 @@ def sign_up(db_connection, client_socket, message_dict):
 		
 	return ans_messages_dict
 
+def recvall(sock, n):
+    '''
+		Function to recv n bytes or return None if EOF is hit
+		Input: Socket, message size
+		Output: The data that was read
+	'''
+    data = b''
+    while len(data) < n:
+        packet = sock.recv(n - len(data))
+        if not packet:
+            return None
+        data += packet
+    return data	
+	
 def handle_requests(db_connection):
 	OPERATIONS_DICT = {SIGN_UP_CODE: sign_up, LOG_IN_CODE: log_in, RECEIVE_MESSAGES_CODE: receive_messages, SEND_TEXT_MESSAGE_CODE: send_text_message, SPEECH_TO_TEXT_CODE: speech_to_text}
 	while True:
-		if MESSAGES_QUEUE: # There are messages waiting
-			client_socket, message_dict = MESSAGES_QUEUE.popleft() # Receive first message in dict format
-			message_dict = json.loads(message_dict)
-			ans_messages_dict = OPERATIONS_DICT[message_dict["code"]](db_connection, client_socket, message_dict)
-			for socket in ans_messages_dict.keys():
-				response = json.dumps(ans_messages_dict[socket])
-				socket.send(str(len(response)).zfill(MAX_SIZE_LEN))
-				socket.send(response)
+		try:
+			if MESSAGES_QUEUE: # There are messages waiting
+				client_socket, message_dict = MESSAGES_QUEUE.popleft() # Receive first message in dict format
+				message_dict = json.loads(message_dict)
+				ans_messages_dict = OPERATIONS_DICT[message_dict["code"]](db_connection, client_socket, message_dict)
+				for socket in ans_messages_dict.keys():
+					response = json.dumps(ans_messages_dict[socket])
+					socket.send(str(len(response)).zfill(MAX_SIZE_LEN))
+					socket.send(response)
+		except Exception, e:
+			print "Error:", e
 
 def client_handler(client_socket):
 	'''
@@ -216,10 +265,10 @@ def client_handler(client_socket):
 		while True:
 			# Receiving data size from client
 			message_size = int(client_socket.recv(MAX_SIZE_LEN))
-
+			
 			# Receiving data from the client
-			client_message = client_socket.recv(message_size)
-
+			client_message = recvall(client_socket, message_size)
+			
 			# Add message to messages queue with client's socket
 			MESSAGES_QUEUE.append((client_socket, client_message))
 		
@@ -276,7 +325,7 @@ def main():
 		listening_socket = bind()
 		
 	except Exception, e:
-		print e
+		print "Error:", e
 		return 0
 		
 	try:
@@ -285,7 +334,7 @@ def main():
 		# Handle all incoming requests
 		handle_requests(sql_database)
 	except Exception, e:
-		print e	
+		print "Error:", e	
 		
 	finally:
 		# Closing the listening socket
