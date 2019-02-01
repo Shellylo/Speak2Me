@@ -34,6 +34,7 @@ public class OutputMessages implements Runnable{
                     String strRequest = msgToSend.toString();
                     this.out.write(String.format("%010d", strRequest.length()).getBytes()); //Sends message size
                     this.out.write(strRequest.getBytes("UTF-8")); //Sends message
+                    System.out.println(strRequest.getBytes("UTF-8"));
                 }
             }
         }

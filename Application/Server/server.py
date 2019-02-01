@@ -268,7 +268,7 @@ def client_handler(client_socket):
 			
 			# Receiving data from the client
 			client_message = recvall(client_socket, message_size)
-			
+			print client_message
 			# Add message to messages queue with client's socket
 			MESSAGES_QUEUE.append((client_socket, client_message))
 		
