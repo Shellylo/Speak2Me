@@ -108,7 +108,7 @@ def speech_to_text(db_connection, client_socket, message_dict):
 		
 	else:
 		# Create mp3 file which contains the record
-		audio_path = message_dict["src_phone"] + ".m4a"
+		audio_path = "Recordings\\" + message_dict["src_phone"] + ".m4a"
 		audio_file = open(audio_path, "w+b")
 		audio_file.write(message_dict["content"].decode("base64"))
 		audio_file.close()
@@ -268,7 +268,7 @@ def client_handler(client_socket):
 			
 			# Receiving data from the client
 			client_message = recvall(client_socket, message_size)
-			print client_message
+			
 			# Add message to messages queue with client's socket
 			MESSAGES_QUEUE.append((client_socket, client_message))
 		
