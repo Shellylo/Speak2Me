@@ -1,10 +1,12 @@
 package speaktome.client;
 
 import android.content.Intent;
+import android.icu.text.AlphabeticIndex;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.Editable;
@@ -28,6 +30,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class ChatScreen extends CommunicationScreen{
@@ -40,9 +44,15 @@ public class ChatScreen extends CommunicationScreen{
     private TextView chatTitle;
     private EditText inputText;
 
+    private Button activeButton;
     private Button recordButton;
     private Button sendButton;
+    private Button timerButton;
     private ImageButton recordedMessagesButton;
+
+    private RecordTask recordTask;
+
+    private boolean stopRecord;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,16 +71,19 @@ public class ChatScreen extends CommunicationScreen{
         this.chatTitle.setText(this.dstName); // Insert contact name into chat title
         this.inputText = (EditText) findViewById(R.id.ChatMessageInput);
         this.recordButton = (Button) findViewById(R.id.ChatRecordButton);
+        this.activeButton = this.recordButton;
         this.sendButton = (Button) findViewById(R.id.ChatSendButton);
-        this.recordedMessagesButton = (ImageButton) findViewById(R.id.ChatRecordedMessagesButton);
         this.sendButton.setClickable(false);
+        this.timerButton = (Button) findViewById(R.id.ChatTimerButton);
+        this.timerButton.setClickable(false);
+        this.recordedMessagesButton = (ImageButton) findViewById(R.id.ChatRecordedMessagesButton);
 
         // Activate listeners
         recordListener();
         textListener();
         sendButtonListener();
         recordedMessagesListener();
-
+        timerListener();
     }
 
     public void onResume()
@@ -81,6 +94,15 @@ public class ChatScreen extends CommunicationScreen{
         this.chatLayout.removeAllViews(); // clear previous messages (in order to update screen)
         initMessages(); // load messages
     }
+
+    public void onPause()
+    {
+        super.onPause();
+        if(this.recordTask != null) {
+            this.recordTask.cancel(true);
+        }
+    }
+
 
     /*
         Display old messages saved in db
@@ -156,6 +178,33 @@ public class ChatScreen extends CommunicationScreen{
         });
     }
 
+    private void sendRecord() {
+        try {
+
+            File file = new File(Environment.getExternalStorageDirectory()
+                    .getAbsolutePath() + RecordTask.AUDIO_PATH);
+            int size = (int) file.length();
+            byte[] bytes = new byte[size];
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(bytes, 0, bytes.length);
+            buf.close();
+            String content = Base64.encodeToString(bytes, Base64.DEFAULT);
+
+            // Prepare audio message request
+            JSONObject sendRecordReq = new JSONObject();
+            sendRecordReq.put("code", Codes.SPEECH_TO_TEXT_CODE);
+            sendRecordReq.put("src_phone", ChatScreen.this.srcPhone);
+            sendRecordReq.put("dst_phone", ChatScreen.this.dstPhone);
+            sendRecordReq.put("content", content);
+
+            // Send message request
+            ChatScreen.this.client.send(sendRecordReq);
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
 
     /*
         Function listens record button. When clicked, receives record and sends it to server
@@ -167,56 +216,8 @@ public class ChatScreen extends CommunicationScreen{
         this.recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    // Record audio from user in mp3 format
-                    MediaRecorder recorder = new MediaRecorder();
-                    recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                    recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-                    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-                    recorder.setOutputFile(Environment.getExternalStorageDirectory()
-                            .getAbsolutePath() + "/messageRecord.m4a");
-                    recorder.prepare();
-                    recorder.start();
-
-                    TimeUnit.SECONDS.sleep(15);
-                    recorder.stop();
-                    recorder.release();
-
-                    File file = new File(Environment.getExternalStorageDirectory()
-                                         .getAbsolutePath() + "/messageRecord.m4a");
-                    int size = (int) file.length();
-                    byte[] bytes = new byte[size];
-                    BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-                    buf.read(bytes, 0, bytes.length);
-                    buf.close();
-                    String content = Base64.encodeToString(bytes, Base64.DEFAULT);
-
-                    // Play record
-                 /*   MediaPlayer mediaPlayer = new MediaPlayer();
-                    try {
-                        mediaPlayer.setDataSource(Environment.getExternalStorageDirectory()
-                                                  .getAbsolutePath() + "/messageRecord.mp3");
-                        mediaPlayer.prepare();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    mediaPlayer.start();*/
-
-
-                    // Prepare audio message request
-                    JSONObject sendRecordReq = new JSONObject();
-                    sendRecordReq.put("code", Codes.SPEECH_TO_TEXT_CODE);
-                    sendRecordReq.put("src_phone", ChatScreen.this.srcPhone);
-                    sendRecordReq.put("dst_phone", ChatScreen.this.dstPhone);
-                    sendRecordReq.put("content", content);
-
-                    // Send message request
-                    ChatScreen.this.client.send(sendRecordReq);
-                }
-                catch (Exception e) {
-                    System.out.println(e);
-                }
+                ChatScreen.this.recordTask = new RecordTask();
+                ChatScreen.this.recordTask.execute();
             }
         });
     }
@@ -250,6 +251,15 @@ public class ChatScreen extends CommunicationScreen{
         });
     }
 
+    private void timerListener() {
+        this.timerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ChatScreen.this.stopRecord = true;
+            }
+        });
+    }
+
     /*
         Check if there is text typed, and change the button according to it (from record to send)
         Input: None
@@ -272,11 +282,15 @@ public class ChatScreen extends CommunicationScreen{
             @Override
             public void onTextChanged(CharSequence s, int start,
                                       int before, int count) {
-                if(s.length() != 0) { // Input was inserted, record button invisible
-                    changeButtonsState(false);
+                if(ChatScreen.this.activeButton != ChatScreen.this.timerButton) {
+                    if (s.length() != 0) { // Input was inserted, record button invisible
+                        updateActiveButton(ChatScreen.this.sendButton);
+                    } else { // Input box is empty, record button visible
+                        updateActiveButton(ChatScreen.this.recordButton);
+                    }
                 }
-                else { // Input box is empty, record button visible
-                    changeButtonsState(true);
+                else if(s.length() != 0) {
+                    ChatScreen.this.inputText.setText("");
                 }
             }
         });
@@ -288,11 +302,22 @@ public class ChatScreen extends CommunicationScreen{
         Input: True if record is the active button, false otherwise
         Output: None
      */
-    private void changeButtonsState(boolean isRecordClickable)
+    private void updateActiveButton(Button newButton)
     {
-        this.recordButton.setClickable(isRecordClickable);
-        this.sendButton.setClickable(!isRecordClickable);
-        this.recordButton.setVisibility(isRecordClickable ? View.VISIBLE : View.INVISIBLE);
+        updateButtonState(this.activeButton, false);
+        this.activeButton = newButton;
+        updateButtonState(this.activeButton, true);
+    }
+
+    /*
+        Function updates deactivated button (removes from screen and disable clickable)
+        Input: Button to update, does the button active
+        Output: None
+     */
+    private void updateButtonState(Button button, boolean isActive)
+    {
+        button.setVisibility(isActive ? View.VISIBLE : View.INVISIBLE);
+        button.setClickable(isActive);
     }
 
     /*
@@ -326,6 +351,71 @@ public class ChatScreen extends CommunicationScreen{
         }
     }
 
+    private class RecordTask extends AsyncTask<Void, Integer, Void> {
 
+        private static final String AUDIO_PATH = "/messageRecord.m4a";
+        private static final int MAX_RECORD_LENGTH_IN_MILLISECONDS = 20000;
+
+        private MediaRecorder recorder;
+
+        @Override
+        protected void onPreExecute() {
+            ChatScreen.this.stopRecord = false;
+            updateActiveButton(ChatScreen.this.timerButton);
+            ChatScreen.this.timerButton.setText("00");
+
+            // Configure audio recorder settings
+            this.recorder = new MediaRecorder();
+            this.recorder.setAudioSource(MediaRecorder.AudioSource.MIC); // Audio source (microphone)
+            this.recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4); // Audio format (m4a)
+            this.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            this.recorder.setOutputFile(Environment.getExternalStorageDirectory() // Audio will be saved in this path
+                                       .getAbsolutePath() + RecordTask.AUDIO_PATH);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                // Start record
+                this.recorder.prepare();
+                this.recorder.start();
+
+                long startTime = Calendar.getInstance().getTimeInMillis();
+                long difference = 0;
+
+                do {
+                    difference = Calendar.getInstance().getTimeInMillis() - startTime;
+                    if(difference/1000 != Integer.parseInt(ChatScreen.this.timerButton.getText().toString())) {
+                        publishProgress((int)difference/1000);
+                    }
+                }
+                while (!isCancelled() && !stopRecord && difference <= RecordTask.MAX_RECORD_LENGTH_IN_MILLISECONDS);
+
+                this.recorder.stop();
+                this.recorder.release();
+            }
+            catch (Exception e) {
+                System.out.println(e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            ChatScreen.this.timerButton.setText(String.format("%02d", values[0]));
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            sendRecord();
+            updateActiveButton(ChatScreen.this.recordButton);
+        }
+
+        @Override
+        protected void onCancelled(Void result) {
+            updateActiveButton(ChatScreen.this.recordButton);
+        }
+
+    }
 
 }
