@@ -8,6 +8,8 @@ import base64
 import re
 import speech_recognition
 from pydub import AudioSegment
+import GUI_log
+import msvcrt
 
 HOST = "10.0.0.7" #10.0.0.7, localhost
 PORT_NUM = 3124
@@ -17,8 +19,12 @@ MAX_SIZE_LEN = 10
 
 M4A_FILE_ENDING_LEN = -4
 
+LOGGING_QUEUE = deque()
+
 MESSAGES_QUEUE = deque()
 CONNECTED_CLIENTS = {}
+
+ACTION_DICT = {100 : "SIGN UP", 101 : "LOG IN", 200 : "RECEIVE MESSAGES", 201 : "SEND TEXT", 203 : "SPEECH TO TEXT"}
 
 # Not Connected Operations
 SIGN_UP_CODE = 100
@@ -86,7 +92,7 @@ def voice_recognition(audio_path):
 
 	with speech_recognition.AudioFile(audio_path) as source:
 		audio = recognizer.record(source)
-	text_message = recognizer.recognize_google(audio, language="en") #.encode("UTF-8") -he
+	text_message = recognizer.recognize_google(audio, language="he") #.encode("UTF-8") -he
 
 	return text_message
 	
@@ -116,10 +122,11 @@ def speech_to_text(db_connection, client_socket, message_dict):
 		text_message = "Error: could not recognize" # TODO: error message
 		try:
 			# Convert mp3 file to wav file and recognize voice
-			audio_path = m4a_to_wav(audio_path)		
+			audio_path = m4a_to_wav(audio_path)	
 			text_message = voice_recognition(audio_path)
 		except Exception, e:
-			print "Error:", e
+			ip, port = client_socket.getpeername()
+			LOGGING_QUEUE.append(("COULD NOT RECOGNIZE", {"IP" : ip, "PORT" : port}, 3))
 		
 		ans_messages_dict[client_socket] = { "code": SPEECH_TO_TEXT_CODE, "messages": [{"src_phone": message_dict["src_phone"], "dst_phone": message_dict["dst_phone"], "content": text_message}] }
 		
@@ -242,11 +249,10 @@ def recvall(sock, n):
 	
 def handle_requests(db_connection):
 	OPERATIONS_DICT = {SIGN_UP_CODE: sign_up, LOG_IN_CODE: log_in, RECEIVE_MESSAGES_CODE: receive_messages, SEND_TEXT_MESSAGE_CODE: send_text_message, SPEECH_TO_TEXT_CODE: speech_to_text}
-	while True:
+	while not (msvcrt.kbhit() and msvcrt.getch() == 'q'):
 		try:
 			if MESSAGES_QUEUE: # There are messages waiting
 				client_socket, message_dict = MESSAGES_QUEUE.popleft() # Receive first message in dict format
-				message_dict = json.loads(message_dict)
 				ans_messages_dict = OPERATIONS_DICT[message_dict["code"]](db_connection, client_socket, message_dict)
 				for socket in ans_messages_dict.keys():
 					response = json.dumps(ans_messages_dict[socket])
@@ -261,33 +267,36 @@ def client_handler(client_socket):
 		Input: client socket
 		Output: None
 	'''
+	ip, port = client_socket.getpeername()
 	try:
+		LOGGING_QUEUE.append(("CONNECTED", {"IP" : ip, "PORT" : port}, 1))
 		while True:
 			# Receiving data size from client
 			message_size = int(client_socket.recv(MAX_SIZE_LEN))
 			
 			# Receiving data from the client
 			client_message = recvall(client_socket, message_size)
+			message_dict = json.loads(client_message)
+			
+			LOGGING_QUEUE.append((ACTION_DICT.get(message_dict.get("code", 0), "NOT DEFINED ACTION"), {"IP" : ip, "PORT" : port}, 2))
 			
 			# Add message to messages queue with client's socket
-			MESSAGES_QUEUE.append((client_socket, client_message))
-		
-	# Sending data back
-	#client_socket.sendall("got it!")
+			MESSAGES_QUEUE.append((client_socket, message_dict))
 	
 	except Exception, e:
-		user = "Unknown user"
-		ip, port = client_socket.getpeername()
 		#remove client from CONNECTED_CLIENTS if he is connected
 		for key, value in CONNECTED_CLIENTS.items():
 			if value == client_socket:
 				user = key
 				del CONNECTED_CLIENTS[key]
 				
-		print user, "disconnected. IP:", ip, "PORT:", port
+		LOGGING_QUEUE.append(("DISCONNECTED", {"IP" : ip, "PORT" : port}, 1))
 	finally:
 		# Closing the conversation socket
-		client_socket.close()
+		try:
+			client_socket.close()
+		except Exception, e:
+			print "Error:", e
 	
 def listen_and_accept(listening_socket):
 	'''
@@ -321,22 +330,33 @@ def bind():
 def main():
 	# Get database connection
 	sql_database = sql_db.init_and_load('SpeakToMe.db')
+	root, logger = GUI_log.init_logger()
 	try:
 		listening_socket = bind()
 		
 	except Exception, e:
 		print "Error:", e
 		return 0
-		
+	
+	LOGGING_QUEUE.append(("SERVER STARTED", {"IP" : HOST, "PORT" : PORT_NUM}, 1))
+	
 	try:
 		# Start a thread for listening to clients
 		thread.start_new_thread(listen_and_accept, (listening_socket, ))
+		# Start a thread for logging
+		thread.start_new_thread(GUI_log.listen_and_update, (root, logger, LOGGING_QUEUE, ))
 		# Handle all incoming requests
 		handle_requests(sql_database)
 	except Exception, e:
 		print "Error:", e	
 		
 	finally:
+		# Closing all existing connections
+		for socket in CONNECTED_CLIENTS.values():
+			try:
+				socket.close()
+			except Exception, e:
+				print "Error:", e
 		# Closing the listening socket
 		listening_socket.close()
 		# Closing the sqlite database connection
