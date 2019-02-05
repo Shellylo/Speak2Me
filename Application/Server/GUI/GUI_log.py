@@ -1,6 +1,7 @@
 import logging 
 import Tkinter
 import ScrolledText
+import tkMessageBox
 
 ACTION = 5 
 
@@ -32,6 +33,11 @@ class TextHandler(logging.Handler):
 def init_logger():
 	# Create Tkinter object and ScrolledText
 	root =Tkinter.Tk()
+	root.title("Server log")
+	root.iconbitmap("Logo\\Logo.ico")
+	root.protocol("WM_DELETE_WINDOW", on_closing)
+	root.resizable(width=False, height=False)
+	
 	st = ScrolledText.ScrolledText(root, state='disabled', height=30, width = 100)
 	st.configure(font='TkFixedFont')
 	st.pack()
@@ -45,8 +51,7 @@ def init_logger():
 	
 	# Add action level
 	logging.addLevelName(ACTION, "ACTION")
-	def action(self, message, *args, **kws):
-		self._log(ACTION, message, args, **kws) 
+
 	logging.Logger.action = action
 	
     # Create logger
@@ -56,7 +61,14 @@ def init_logger():
 	
 	return (root, logger)
 	
-def listen_and_update(root, logger, log_queue):
+def action(self, message, *args, **kws):
+	self._log(ACTION, message, args, **kws) 
+	
+def on_closing():
+	tkMessageBox.showinfo("Close", "To close the program press 'q' in cmd")
+	
+def listen_and_update(log_queue):
+	root, logger = init_logger()
 	while True:
 		if log_queue:
 			msg, extra, level = log_queue.popleft()

@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import sys
+sys.path.append('E:\Project\shelly-and-netanel\Application\Server\GUI')
+sys.path.append('E:\Project\shelly-and-netanel\Application\Server\SQL')
 import socket
 import thread
 from collections import deque
@@ -329,8 +332,7 @@ def bind():
 	
 def main():
 	# Get database connection
-	sql_database = sql_db.init_and_load('SpeakToMe.db')
-	root, logger = GUI_log.init_logger()
+	sql_database = sql_db.init_and_load('SQL\\SpeakToMe.db')
 	try:
 		listening_socket = bind()
 		
@@ -344,7 +346,7 @@ def main():
 		# Start a thread for listening to clients
 		thread.start_new_thread(listen_and_accept, (listening_socket, ))
 		# Start a thread for logging
-		thread.start_new_thread(GUI_log.listen_and_update, (root, logger, LOGGING_QUEUE, ))
+		thread.start_new_thread(GUI_log.listen_and_update, (LOGGING_QUEUE, ))
 		# Handle all incoming requests
 		handle_requests(sql_database)
 	except Exception, e:
