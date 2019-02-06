@@ -56,7 +56,7 @@ public class CommunicationScreen extends GeneralScreen implements Runnable{
         JSONObject response;
         ArrayList<Message> messages;
         while (this.live) {
-            while((response = this.client.getConversationFlow()) != null) {
+            if((response = this.client.getConversationFlow()) != null) { //while -> if
                 try {
                     if ((int)response.get("code") == Codes.RECEIVE_MESSAGES_CODE || (int)response.get("code") == Codes.SEND_TEXT_MESSAGE_CODE) {
                         messages = Helper.jsonArrayToList(response.getJSONArray("messages"), this.srcPhone, true);
@@ -71,7 +71,7 @@ public class CommunicationScreen extends GeneralScreen implements Runnable{
                     System.out.println(e);
                 }
             }
-            while((response = this.client.getPushedMessage()) != null) {
+            if((response = this.client.getPushedMessage()) != null) { //while -> if
                 try {
                     if ((int)response.get("code") == Codes.PUSH_MESSAGE_CODE) {
                         messages = Helper.jsonArrayToList(response.getJSONArray("messages"), this.srcPhone, true);
