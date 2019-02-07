@@ -78,11 +78,20 @@ public class ContactChatDetails {
         return message;
     }
 
+    @Override
+    public String toString() {
+        return "ContactChatDetails{" +
+                ", contactName='" + contactName + '\'' +
+                ", contactPhone='" + contactPhone + '\'' +
+                ", message='" + message + '\'' +
+                '}';
+    }
+
     /*
-        Function sets last message from contact
-        Input: The message
-        Output: None
-     */
+            Function sets last message from contact
+            Input: The message
+            Output: None
+         */
     public void setMessage(String message) {
         this.message = message;
     }

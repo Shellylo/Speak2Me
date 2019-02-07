@@ -3,7 +3,6 @@ package speaktome.client;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -87,7 +86,8 @@ public class MySqliteDatabase extends SQLiteOpenHelper {
                         " FROM " + MESSAGES_TABLE_NAME +
                         " WHERE " + MESSAGES_COLUMN_IS_IN_CHAT + " = 1" + ")" +
                 " GROUP BY " + MESSAGES_COLUMN_PHONE_CHAT +
-                " HAVING MAX(" + MESSAGES_COLUMN_MESSAGE_ID + ")", null);
+                " HAVING MAX(" + MESSAGES_COLUMN_MESSAGE_ID + ") " +
+                " ORDER BY " + MESSAGES_COLUMN_MESSAGE_ID + " DESC", null);
         res.moveToFirst();
 
         ContactChatDetails id;
@@ -99,6 +99,7 @@ public class MySqliteDatabase extends SQLiteOpenHelper {
             ret.add(id);
             res.moveToNext();
         }
+        System.out.println("PRINTING:" + ret.toString());
         return ret;
     }
 
