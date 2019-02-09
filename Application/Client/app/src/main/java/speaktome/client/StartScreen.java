@@ -24,9 +24,6 @@ public class StartScreen extends ErrorDisplayerScreen {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_screen);
 
-        // Set client (server connection)
-      //  this.client = ClientHandler.getClient();
-
         // Set widgets
         this.signUpButton = (Button)findViewById(R.id.LogInSignUpButton);
         this.logInButton = (Button)findViewById(R.id.LogInLogInButton);
@@ -86,6 +83,7 @@ public class StartScreen extends ErrorDisplayerScreen {
                     }
                     while (logInResponse == null);
 
+                    // Check code and handle response according to it
                     switch ((int)logInResponse.get("code"))
                     {
                         case Codes.LOG_IN_CODE: // Log in completed, switch to chats screen
@@ -112,6 +110,14 @@ public class StartScreen extends ErrorDisplayerScreen {
         });
     }
 
+    /*
+        Function removes from screen:
+         * error messages if exist
+         * Phone number if inserted
+         * Password if inserted
+        Input: None
+        Output: None
+     */
     private void clearScreen() {
         super.updateError(null);
         this.phoneNumber.setText("");

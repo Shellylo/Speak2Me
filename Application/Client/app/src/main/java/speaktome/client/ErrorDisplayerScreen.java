@@ -15,7 +15,10 @@ public class ErrorDisplayerScreen extends GeneralScreen {
 
 
     /*
-
+        Updates current error (changes previous error if existing to be invisible,
+        and received error to be visible)
+        Input: Error to display
+        Output: None
      */
     protected void updateError(TextView newError)
     {
@@ -25,7 +28,9 @@ public class ErrorDisplayerScreen extends GeneralScreen {
     }
 
     /*
-
+        Sets current error visibility according to input
+        Input: Visible / Invisible
+        Output: None
      */
     protected void setVisibility(int visibility)
     {

@@ -64,6 +64,7 @@ public class SignupScreen extends ErrorDisplayerScreen {
                     signUpResponse = SignupScreen.this.client.getConversationFlow();
                 } while (signUpResponse == null);
 
+                // Check code and handle response according to it
                 switch ((int)signUpResponse.get("code"))
                 {
                     case Codes.SIGN_UP_CODE: // User sign up completed, go back to log in screen
