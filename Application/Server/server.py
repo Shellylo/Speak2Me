@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
-sys.path.append('E:\Project\shelly-and-netanel\Application\Server\GUI')
-sys.path.append('E:\Project\shelly-and-netanel\Application\Server\SQL')
+import os
+sys.path.append(os.getcwd() + "\\GUI")
+sys.path.append(os.getcwd() + "\\SQL")
 import socket
 import thread
 from collections import deque
