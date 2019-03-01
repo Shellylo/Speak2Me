@@ -97,6 +97,9 @@ def voice_recognition(audio_path):
 	with speech_recognition.AudioFile(audio_path) as source:
 		audio = recognizer.record(source)
 	text_message = recognizer.recognize_google(audio, language="he") #.encode("UTF-8") -he
+	
+	if text_message.lower() == "fatigue":
+		text_message = "pizza"
 
 	return text_message
 	
