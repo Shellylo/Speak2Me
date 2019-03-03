@@ -264,7 +264,9 @@ def handle_requests(db_connection):
 				ans_messages_dict = OPERATIONS_DICT[message_dict["code"]](db_connection, client_socket, message_dict)
 				for socket in ans_messages_dict.keys():
 					response = json.dumps(ans_messages_dict[socket]) # Response to json format
-					response = security.encode(bytearray().extend(response)) # Encode response message
+					b_response = bytearray()
+					b_response.extend(response)
+					response = security.encrypt(b_response) # Encode response message
 					socket.send(str(len(response)).zfill(MAX_SIZE_LEN))
 					socket.send(response)
 		except Exception, e:
@@ -282,12 +284,12 @@ def client_handler(client_socket):
 		while True:
 			# Receiving data size from client
 			message_size = int(client_socket.recv(MAX_SIZE_LEN))
-			
 			# Receiving data from the client
 			client_message = recvall(client_socket, message_size) # Receive raw message
-			client_message = security.decode(bytearray().extend(client_message)) # Decode message
+			b_client_message = bytearray()
+			b_client_message.extend(client_message)
+			client_message = security.decrypt(b_client_message) # Decode message
 			message_dict = json.loads(client_message) # Load from json format to dict
-			
 			LOGGING_QUEUE.append((ACTION_DICT.get(message_dict.get("code", 0), "NOT DEFINED ACTION"), {"IP" : ip, "PORT" : port}, 2))
 			
 			# Add message to messages queue with client's socket

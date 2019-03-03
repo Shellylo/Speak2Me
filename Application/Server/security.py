@@ -26,7 +26,7 @@ def encrypt(byte_array):
 		positions = next_positions
 		encrypted_bytes.append(random_byte)
 		
-	return encrypted_bytes
+	return str(encrypted_bytes)
 	
 def decrypt(encrypted_bytes):
 	'''
@@ -34,20 +34,19 @@ def decrypt(encrypted_bytes):
 		Input: encrypted bytes array
 		Output: decrypted bytes array
 	'''
-	decrypted_bytes = bytearray()
+	decrypted_bytes = bytearray((len(encrypted_bytes) - 1)/4)
 	
 	nextPos1, nextPos2 = 6, 7
 	
-	for i in range((len(encrypted_bytes) - 1)/4):
-		byte = 0
-		for j in range(4):
-			nextPos1, nextPos2 = get_nums(encrypted_bytes[i*4+j], get_positions_array(nextPos1, nextPos2))
-			byte = set_bit(byte, j*2, get_bit(encrypted_bytes[i*4+j+1], nextPos1))
-			byte = set_bit(byte, j*2+1, get_bit(encrypted_bytes[i*4+j+1], nextPos2))
+	for i in range(len(encrypted_bytes) - 1):
+		byte = decrypted_bytes[i/4]
+		nextPos1, nextPos2 = get_nums(encrypted_bytes[i], get_positions_array(nextPos1, nextPos2))
+		byte = set_bit(byte, i%4*2, get_bit(encrypted_bytes[i+1], nextPos1))
+		byte = set_bit(byte, i%4*2+1, get_bit(encrypted_bytes[i+1], nextPos2))
 		
-		decrypted_bytes.append(byte)
+		decrypted_bytes[i/4] = byte
 	
-	return decrypted_bytes
+	return str(decrypted_bytes)
 	
 def get_valid_random_byte(pos1, pos2):
 	'''
@@ -94,11 +93,6 @@ def set_bit(byte, pos, val):
 		Input: byte to edit, bit position, bit value (1/0)
 		Output: edited byte
 	'''
-	f = open("bytes", "ab")
-	f.write(str(byte))
-	f.close()
-	print "position", pos
-	print "value", val
 	pos = 7 - pos # Reverse direction (left to right)
 	
 	byte = byte & ~(1 << pos)
