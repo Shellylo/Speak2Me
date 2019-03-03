@@ -10,7 +10,7 @@ VALID_POSITIONS_LEN = 6
 def encrypt(byte_array):
 	'''
 		Function encrypts bytes
-		Input: String for encryption
+		Input: Byte array for encryption
 		Output: Encrypted string
 	'''
 	encrypted_bytes = bytearray() # initialize byte array for encrypted string

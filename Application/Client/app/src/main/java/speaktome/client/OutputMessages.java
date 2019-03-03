@@ -32,6 +32,7 @@ public class OutputMessages implements Runnable{
                 while(!this.conversationFlow.isEmpty()) {
                     JSONObject msgToSend = this.conversationFlow.remove();
                     byte[] byteRequest = msgToSend.toString().getBytes("UTF-8");
+                    byteRequest = Security.encrypt(byteRequest);
                     this.out.write(String.format("%010d", byteRequest.length).getBytes()); //Sends message size
                     this.out.write(byteRequest); //Sends message
                 }
