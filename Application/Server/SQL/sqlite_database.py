@@ -1,5 +1,11 @@
 import sqlite3
 import os
+import md5
+
+def hash_str(str):
+	hashed_str = md5.new()
+	hashed_str.update(str)
+	return str.hexdigest()
 
 def delete_messages(db_connection, phone_num):
 	'''
@@ -41,7 +47,7 @@ def is_login_ok(db_connection, phone_num, password):
 		Output: True if the details are correct, False otherwise
 	'''
 	connection_cursor = db_connection.cursor()
-	return len(connection_cursor.execute("SELECT * FROM USERS WHERE PHONE_NUM = \"" + phone_num + "\"" + " AND PASSWORD = \"" + password + "\"").fetchall()) > 0
+	return len(connection_cursor.execute("SELECT * FROM USERS WHERE PHONE_NUM = \"" + phone_num + "\"" + " AND PASSWORD = \"" + hash_str(password) + "\"").fetchall()) > 0
 	
 def does_user_exist(db_connection, phone_num):
 	'''
@@ -59,7 +65,7 @@ def sign_up(db_connection, phone_num, password, name):
 		Output: None
 	'''
 	connection_cursor = db_connection.cursor()
-	connection_cursor.execute("INSERT INTO USERS (PHONE_NUM, PASSWORD, NAME) VALUES (\"" + phone_num + "\", \"" + password + "\", \"" + name + "\")")
+	connection_cursor.execute("INSERT INTO USERS (PHONE_NUM, PASSWORD, NAME) VALUES (\"" + phone_num + "\", \"" + hash_str(password) + "\", \"" + name + "\")")
 	db_connection.commit() # Save changes
 
 def init_and_load(database_name):

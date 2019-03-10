@@ -41,7 +41,7 @@ public class InputMessages implements Runnable {
                 // Receive response and convert into JSONObject
                 input = new byte[size];
                 this.in.read(input);
-                input = Security.decrypt(input);
+               // input = Security.decrypt(input);
                 String strInput = new String(input);
                 JSONObject json = new JSONObject(strInput);
 
