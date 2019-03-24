@@ -4,8 +4,8 @@ import md5
 
 def hash_str(str):
 	hashed_str = md5.new()
-	hashed_str.update(str)
-	return str.hexdigest()
+	hashed_str.update(str.encode('utf-8'))
+	return hashed_str.hexdigest()
 
 def delete_messages(db_connection, phone_num):
 	'''

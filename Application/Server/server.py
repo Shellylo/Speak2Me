@@ -14,9 +14,9 @@ import speech_recognition
 from pydub import AudioSegment
 import GUI_log
 import msvcrt
-import security
+#import security
 
-HOST = "10.0.0.7" #10.0.0.7, localhost
+HOST = "localhost" #10.0.0.7, localhost
 PORT_NUM = 3124
 
 MAX_QUEUE_CONNECTIONS = 5
@@ -261,6 +261,7 @@ def handle_requests(db_connection):
 		try:
 			if MESSAGES_QUEUE: # There are messages waiting
 				client_socket, message_dict = MESSAGES_QUEUE.popleft() # Receive first message in dict format
+				print message_dict
 				ans_messages_dict = OPERATIONS_DICT[message_dict["code"]](db_connection, client_socket, message_dict)
 				for socket in ans_messages_dict.keys():
 					response = json.dumps(ans_messages_dict[socket]) # Response to json format
