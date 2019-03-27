@@ -16,7 +16,7 @@ import GUI_log
 import msvcrt
 #import security
 
-HOST = "localhost" #10.0.0.7, localhost
+HOST = "10.0.0.7" #10.0.0.7, localhost
 PORT_NUM = 3124
 
 MAX_QUEUE_CONNECTIONS = 5
