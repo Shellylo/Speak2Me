@@ -1,5 +1,7 @@
 package speaktome.client;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -11,5 +13,28 @@ public class GeneralScreen extends AppCompatActivity {
 
         // Set client (server connection)
         this.client = ClientHandler.getClient();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isTaskRoot()) {
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Closing Application")
+                    .setMessage("Are you sure you want to exit the Speak2Me?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                            System.exit(0);
+                        }
+
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        }
+        else {
+            finish();
+        }
     }
 }

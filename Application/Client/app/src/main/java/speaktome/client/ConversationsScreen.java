@@ -66,7 +66,6 @@ public class ConversationsScreen extends ContactsListScreen{
         Output: None
      */
     private void initRecyclerDetails() {
-        System.out.println("PRINTING: CHECK");
         this.contactsDetails.clear();
         ArrayList<ContactChatDetails> messages = this.sqlDB.getTopMessages();
         ArrayList<ContactChatDetails> contacts = super.getContacts();
@@ -101,6 +100,7 @@ public class ConversationsScreen extends ContactsListScreen{
 
     /*
         Updates the sql database and the recycler view
+        Input: New messages
         Input: New messages
         Output: None
      */

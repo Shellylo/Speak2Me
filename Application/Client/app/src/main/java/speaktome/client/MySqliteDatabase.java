@@ -99,7 +99,6 @@ public class MySqliteDatabase extends SQLiteOpenHelper {
             ret.add(id);
             res.moveToNext();
         }
-        System.out.println("PRINTING:" + ret.toString());
         return ret;
     }
 
