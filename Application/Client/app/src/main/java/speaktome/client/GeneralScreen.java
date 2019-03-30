@@ -15,6 +15,12 @@ public class GeneralScreen extends AppCompatActivity {
         this.client = ClientHandler.getClient();
     }
 
+
+    /*
+        Function makes sure when the back button is pressed and is going to cause an app closing, that the user really wants to close the app
+        Input: none
+        Output: none
+     */
     @Override
     public void onBackPressed() {
         if (isTaskRoot()) {
