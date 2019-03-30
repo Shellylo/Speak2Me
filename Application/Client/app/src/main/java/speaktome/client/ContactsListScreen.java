@@ -25,7 +25,7 @@ public class ContactsListScreen extends CommunicationScreen{
         Output: None
      */
     protected void initRecyclerView(){
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this.contactsDetails, this, this.srcPhone);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this.contactsDetails, this, this.srcPhone, this.sqlDB, this);
         this.rv.setAdapter(adapter);
         this.rv.setLayoutManager(new LinearLayoutManager(this));
     }

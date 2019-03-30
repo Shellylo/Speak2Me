@@ -1,13 +1,20 @@
 package speaktome.client;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -19,10 +26,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private Context context;
     private String phone;
 
-    public RecyclerViewAdapter(ArrayList<ContactChatDetails> layoutItems, Context context, String phone) {
+    private MySqliteDatabase sqlDB;
+    private ContactsListScreen conversationsScreen;
+
+    public RecyclerViewAdapter(ArrayList<ContactChatDetails> layoutItems, Context context, String phone, MySqliteDatabase sqlDB, ContactsListScreen conversationsScreen) {
         this.layoutItems = layoutItems;
         this.context = context;
         this.phone = phone;
+        this.sqlDB = sqlDB;
+        this.conversationsScreen = conversationsScreen;
     }
 
     @NonNull
@@ -70,19 +82,58 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return this.layoutItems.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
         ImageView contactImage;
         TextView contactName;
         TextView contactPhone;
         TextView message;
         RelativeLayout chatsLayout;
-        public ViewHolder(View itemView) {
+        public ViewHolder(final View itemView) {
             super(itemView);
             this.contactImage = itemView.findViewById(R.id.LayoutContactImage);
             this.contactName = itemView.findViewById(R.id.LayoutContactName);
             this.contactPhone = itemView.findViewById(R.id.LayoutPhoneNum);
             this.message = itemView.findViewById(R.id.LayoutMessageText);
             this.chatsLayout = itemView.findViewById(R.id.parent_layout);
+
+            itemView.setOnCreateContextMenuListener(this);
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    PopupMenu popup = new PopupMenu(itemView.getContext(), itemView);
+                    popup.inflate(R.menu.contacts_list_menu);
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.DeleteChat:
+                                    RecyclerViewAdapter.this.sqlDB.removeAllMessagesInChat(ViewHolder.this.contactPhone.getText().toString());
+                                    ((ConversationsScreen)RecyclerViewAdapter.this.conversationsScreen).initRecyclerDetails();
+                                    RecyclerViewAdapter.this.notifyDataSetChanged();
+                                    return true;
+                                default:
+                                    return false;
+                            }
+                        }
+                    });
+                    popup.setGravity(Gravity.RIGHT);
+                    popup.show();
+                    return true;
+                }
+            });
         }
+
+         /*   Function creates pop-up context menu when item in recycler view is held
+            Input: menu, current view, menu info
+            Output: None
+        */
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+
+        }
+
     }
 }

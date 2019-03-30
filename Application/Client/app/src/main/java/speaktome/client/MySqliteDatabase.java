@@ -138,4 +138,15 @@ public class MySqliteDatabase extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(MESSAGES_TABLE_NAME, MESSAGES_COLUMN_MESSAGE_ID + "=" + messageId, null);
     }
+
+    /*
+        Removes all messages from specified number
+        Input: phone number
+        Output: None
+     */
+    public void removeAllMessagesInChat(String phoneNum)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(MESSAGES_TABLE_NAME, MESSAGES_COLUMN_PHONE_CHAT + "='" + phoneNum + "'", null);
+    }
 }

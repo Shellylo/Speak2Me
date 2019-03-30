@@ -1,9 +1,18 @@
 package speaktome.client;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.json.JSONObject;
 
@@ -27,6 +36,7 @@ public class ConversationsScreen extends ContactsListScreen{
         this.initRecyclerDetails();
         this.rv = findViewById(R.id.ChatsList);
         initRecyclerView();
+        registerForContextMenu(this.rv); // Register the recycler view to context menu
 
         addChatListener();
         requestNewMessages();
@@ -65,8 +75,7 @@ public class ConversationsScreen extends ContactsListScreen{
         Input: None
         Output: None
      */
-    private void initRecyclerDetails() {
-        System.out.println("PRINTING: CHECK");
+    protected void initRecyclerDetails() {
         this.contactsDetails.clear();
         ArrayList<ContactChatDetails> messages = this.sqlDB.getTopMessages();
         ArrayList<ContactChatDetails> contacts = super.getContacts();
@@ -114,4 +123,5 @@ public class ConversationsScreen extends ContactsListScreen{
             }
         });
     }
+
 }
