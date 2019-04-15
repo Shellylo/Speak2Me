@@ -283,11 +283,17 @@ def client_handler(client_socket):
 		Output: None
 	'''
 	ip, port = client_socket.getpeername()
+	client_socket.settimeout(5)
 	try:
 		LOGGING_QUEUE.append(("CONNECTED", {"IP" : ip, "PORT" : port}, 1))
 		while True:
 			# Receiving data size from client
 			message_size = int(client_socket.recv(MAX_SIZE_LEN))
+			
+			#Ping message
+			if message_size == 0:
+				continue
+				
 			# Receiving data from the client
 			client_message = recvall(client_socket, message_size) # Receive raw message
 			
