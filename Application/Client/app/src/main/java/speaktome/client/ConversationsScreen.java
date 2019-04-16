@@ -3,6 +3,8 @@ package speaktome.client;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -56,6 +58,17 @@ public class ConversationsScreen extends ContactsListScreen{
         else {
             created = false;
         }
+    }
+
+    /*
+        Initializes recyclerview object (override, in order to add costume adapter)
+        Input: None
+        Output: None
+     */
+    protected void initRecyclerView(){
+        ConversationsScreenRecyclerViewAdapter adapter = new ConversationsScreenRecyclerViewAdapter(this.contactsDetails, this, this.srcPhone, this.sqlDB);
+        this.rv.setAdapter(adapter);
+        this.rv.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private void addChatListener()

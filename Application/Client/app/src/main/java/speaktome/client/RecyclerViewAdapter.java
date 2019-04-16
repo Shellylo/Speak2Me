@@ -5,11 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,19 +19,17 @@ import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
-    private ArrayList<ContactChatDetails> layoutItems;
-    private Context context;
-    private String phone;
+    protected ArrayList<ContactChatDetails> layoutItems;
+    protected Context context;
+    protected String phone;
 
-    private MySqliteDatabase sqlDB;
-    private ContactsListScreen conversationsScreen;
+    protected MySqliteDatabase sqlDB;
 
-    public RecyclerViewAdapter(ArrayList<ContactChatDetails> layoutItems, Context context, String phone, MySqliteDatabase sqlDB, ContactsListScreen conversationsScreen) {
+    public RecyclerViewAdapter(ArrayList<ContactChatDetails> layoutItems, Context context, String phone, MySqliteDatabase sqlDB) {
         this.layoutItems = layoutItems;
         this.context = context;
         this.phone = phone;
         this.sqlDB = sqlDB;
-        this.conversationsScreen = conversationsScreen;
     }
 
     @NonNull
@@ -51,7 +46,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
         ContactChatDetails currentDetails = this.layoutItems.get(i);
         viewHolder.contactImage.setImageResource(R.drawable.profile_picture); //TODO: get image from contact
         viewHolder.contactName.setText(currentDetails.getContactName());
@@ -82,13 +77,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return this.layoutItems.size();
     }
 
-
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView contactImage;
         TextView contactName;
         TextView contactPhone;
         TextView message;
         RelativeLayout chatsLayout;
+
         public ViewHolder(final View itemView) {
             super(itemView);
             this.contactImage = itemView.findViewById(R.id.LayoutContactImage);
@@ -97,43 +92,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             this.message = itemView.findViewById(R.id.LayoutMessageText);
             this.chatsLayout = itemView.findViewById(R.id.parent_layout);
 
-            itemView.setOnCreateContextMenuListener(this);
-
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    PopupMenu popup = new PopupMenu(itemView.getContext(), itemView);
-                    popup.inflate(R.menu.contacts_list_menu);
-                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.DeleteChat:
-                                    RecyclerViewAdapter.this.sqlDB.removeAllMessagesInChat(ViewHolder.this.contactPhone.getText().toString());
-                                    ((ConversationsScreen)RecyclerViewAdapter.this.conversationsScreen).initRecyclerDetails();
-                                    RecyclerViewAdapter.this.notifyDataSetChanged();
-                                    return true;
-                                default:
-                                    return false;
-                            }
-                        }
-                    });
-                    popup.setGravity(Gravity.RIGHT);
-                    popup.show();
-                    return true;
-                }
-            });
         }
-
-         /*   Function creates pop-up context menu when item in recycler view is held
-            Input: menu, current view, menu info
-            Output: None
-        */
-
-        @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-
-        }
-
     }
 }
