@@ -1,13 +1,17 @@
 package speaktome.client;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -15,9 +19,9 @@ import java.util.ArrayList;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
-    private ArrayList<ContactChatDetails> layoutItems;
-    private Context context;
-    private String phone;
+    protected ArrayList<ContactChatDetails> layoutItems;
+    protected Context context;
+    protected String phone;
 
     public RecyclerViewAdapter(ArrayList<ContactChatDetails> layoutItems, Context context, String phone) {
         this.layoutItems = layoutItems;
@@ -39,7 +43,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
         ContactChatDetails currentDetails = this.layoutItems.get(i);
         viewHolder.contactImage.setImageResource(R.drawable.profile_picture); //TODO: get image from contact
         viewHolder.contactName.setText(currentDetails.getContactName());
@@ -76,13 +80,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView contactPhone;
         TextView message;
         RelativeLayout chatsLayout;
-        public ViewHolder(View itemView) {
+
+        public ViewHolder(final View itemView) {
             super(itemView);
             this.contactImage = itemView.findViewById(R.id.LayoutContactImage);
             this.contactName = itemView.findViewById(R.id.LayoutContactName);
             this.contactPhone = itemView.findViewById(R.id.LayoutPhoneNum);
             this.message = itemView.findViewById(R.id.LayoutMessageText);
             this.chatsLayout = itemView.findViewById(R.id.parent_layout);
+
         }
     }
 }
