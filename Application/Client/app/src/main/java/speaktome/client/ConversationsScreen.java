@@ -65,12 +65,19 @@ public class ConversationsScreen extends ContactsListScreen{
         Input: None
         Output: None
      */
+    @Override
     protected void initRecyclerView(){
-        ConversationsScreenRecyclerViewAdapter adapter = new ConversationsScreenRecyclerViewAdapter(this.contactsDetails, this, this.srcPhone, this.sqlDB);
+        ConversationsScreenRecyclerViewAdapter adapter = new ConversationsScreenRecyclerViewAdapter(this.contactsDetails, this, this.srcPhone);
         this.rv.setAdapter(adapter);
         this.rv.setLayoutManager(new LinearLayoutManager(this));
     }
 
+    /*
+        Listens to 'Add Chat' button (+ button).
+        When clicked, changes screen to contacts list screen.
+        Input: None
+        Output: None
+     */
     private void addChatListener()
     {
         this.addChatButton.setOnClickListener(new View.OnClickListener() {
@@ -126,8 +133,28 @@ public class ConversationsScreen extends ContactsListScreen{
         Input: New messages
         Output: None
      */
+    @Override
     protected void updateMessages(ArrayList<Message> messages) {
         super.updateMessages(messages);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ConversationsScreen.this.initRecyclerDetails();
+                ConversationsScreen.this.rv.getAdapter().notifyDataSetChanged();
+            }
+        });
+    }
+
+    /*
+        Deletes conversation (deletes all the existing messages from the specified
+                              number and removes the chat from conversations screen).
+        Input: Contact's phone number
+        Output: None
+     */
+    public void deleteConversation(String contactPhoneNum) {
+        this.sqlDB.removeAllMessagesInChat(contactPhoneNum); // Delete messages from phone storage
+
+        // Update screen (removes the conversation in GUI)
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

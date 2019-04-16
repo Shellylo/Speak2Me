@@ -23,13 +23,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     protected Context context;
     protected String phone;
 
-    protected MySqliteDatabase sqlDB;
-
-    public RecyclerViewAdapter(ArrayList<ContactChatDetails> layoutItems, Context context, String phone, MySqliteDatabase sqlDB) {
+    public RecyclerViewAdapter(ArrayList<ContactChatDetails> layoutItems, Context context, String phone) {
         this.layoutItems = layoutItems;
         this.context = context;
         this.phone = phone;
-        this.sqlDB = sqlDB;
     }
 
     @NonNull
