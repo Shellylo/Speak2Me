@@ -291,22 +291,20 @@ def client_handler(client_socket):
 			message_size = int(client_socket.recv(MAX_SIZE_LEN))
 			
 			#Ping message
-			if message_size == 0:
-				continue
+			if message_size != 0:
+				# Receiving data from the client
+				client_message = recvall(client_socket, message_size) # Receive raw message
 				
-			# Receiving data from the client
-			client_message = recvall(client_socket, message_size) # Receive raw message
-			
-			''' Decryption (currently not implemented well)
-			b_client_message = bytearray()
-			b_client_message.extend(client_message)
-			client_message = security.decrypt(b_client_message) # Decode message '''
-			
-			message_dict = json.loads(client_message) # Load from json format to dict
-			LOGGING_QUEUE.append((ACTION_DICT.get(message_dict.get("code", 0), "NOT DEFINED ACTION"), {"IP" : ip, "PORT" : port}, 2))
-			
-			# Add message to messages queue with client's socket
-			MESSAGES_QUEUE.append((client_socket, message_dict))
+				''' Decryption (currently not implemented well)
+				b_client_message = bytearray()
+				b_client_message.extend(client_message)
+				client_message = security.decrypt(b_client_message) # Decode message '''
+				
+				message_dict = json.loads(client_message) # Load from json format to dict
+				LOGGING_QUEUE.append((ACTION_DICT.get(message_dict.get("code", 0), "NOT DEFINED ACTION"), {"IP" : ip, "PORT" : port}, 2))
+				
+				# Add message to messages queue with client's socket
+				MESSAGES_QUEUE.append((client_socket, message_dict))
 	
 	except Exception, e:
 		#remove client from CONNECTED_CLIENTS if he is connected

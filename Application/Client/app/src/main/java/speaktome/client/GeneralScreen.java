@@ -38,8 +38,7 @@ public class GeneralScreen extends AppCompatActivity {
                     })
                     .setNegativeButton("No", null)
                     .show();
-        }
-        else {
+        } else {
             finish();
         }
     }
