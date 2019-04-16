@@ -1,9 +1,20 @@
 package speaktome.client;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.json.JSONObject;
 
@@ -27,6 +38,7 @@ public class ConversationsScreen extends ContactsListScreen{
         this.initRecyclerDetails();
         this.rv = findViewById(R.id.ChatsList);
         initRecyclerView();
+        registerForContextMenu(this.rv); // Register the recycler view to context menu
 
         addChatListener();
         requestNewMessages();
@@ -48,6 +60,24 @@ public class ConversationsScreen extends ContactsListScreen{
         }
     }
 
+    /*
+        Initializes recyclerview object (override, in order to add costume adapter)
+        Input: None
+        Output: None
+     */
+    @Override
+    protected void initRecyclerView(){
+        ConversationsScreenRecyclerViewAdapter adapter = new ConversationsScreenRecyclerViewAdapter(this.contactsDetails, this, this.srcPhone);
+        this.rv.setAdapter(adapter);
+        this.rv.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    /*
+        Listens to 'Add Chat' button (+ button).
+        When clicked, changes screen to contacts list screen.
+        Input: None
+        Output: None
+     */
     private void addChatListener()
     {
         this.addChatButton.setOnClickListener(new View.OnClickListener() {
@@ -65,7 +95,7 @@ public class ConversationsScreen extends ContactsListScreen{
         Input: None
         Output: None
      */
-    private void initRecyclerDetails() {
+    protected void initRecyclerDetails() {
         this.contactsDetails.clear();
         ArrayList<ContactChatDetails> messages = this.sqlDB.getTopMessages();
         ArrayList<ContactChatDetails> contacts = super.getContacts();
@@ -104,6 +134,7 @@ public class ConversationsScreen extends ContactsListScreen{
         Input: New messages
         Output: None
      */
+    @Override
     protected void updateMessages(ArrayList<Message> messages) {
         super.updateMessages(messages);
         runOnUiThread(new Runnable() {
@@ -114,4 +145,24 @@ public class ConversationsScreen extends ContactsListScreen{
             }
         });
     }
+
+    /*
+        Deletes conversation (deletes all the existing messages from the specified
+                              number and removes the chat from conversations screen).
+        Input: Contact's phone number
+        Output: None
+     */
+    public void deleteConversation(String contactPhoneNum) {
+        this.sqlDB.removeAllMessagesInChat(contactPhoneNum); // Delete messages from phone storage
+
+        // Update screen (removes the conversation in GUI)
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ConversationsScreen.this.initRecyclerDetails();
+                ConversationsScreen.this.rv.getAdapter().notifyDataSetChanged();
+            }
+        });
+    }
+
 }
