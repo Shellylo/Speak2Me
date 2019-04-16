@@ -1,5 +1,7 @@
 package speaktome.client;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +12,9 @@ import android.widget.TextView;
 import org.json.JSONObject;
 
 public class StartScreen extends ErrorDisplayerScreen {
+    private final int MAX_WRONG_LOG_IN = 3;
+    private int wrongLogInCounter;
+
     private Button signUpButton;
     private Button logInButton;
     private EditText phoneNumber;
@@ -23,6 +28,8 @@ public class StartScreen extends ErrorDisplayerScreen {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_screen);
+
+        this.wrongLogInCounter = 0;
 
         // Set widgets
         this.signUpButton = (Button)findViewById(R.id.LogInSignUpButton);
@@ -39,6 +46,48 @@ public class StartScreen extends ErrorDisplayerScreen {
     }
 
     /*
+        Starts the sign up screen
+        Input: none
+        Output: none
+     */
+    private void moveToSignUpScreen() {
+        this.wrongLogInCounter = 0;
+        // Clear errors
+        clearScreen();
+        Intent intent = new Intent(StartScreen.this, SignupScreen.class);
+        startActivity(intent);
+    }
+
+    /*
+        Handles wrong log in - if logged in wrong 3 times, a pop up will ask you if you want to create an account
+        Input: none
+        Output: none
+     */
+    private void wrongLogIn() {
+        this.wrongLogInCounter++;
+        if(wrongLogInCounter >= this.MAX_WRONG_LOG_IN) {
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_info)
+                    .setTitle("Create an Account?")
+                    .setMessage("Seems like you don't have an account, do you wish to create one?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            moveToSignUpScreen();
+                        }
+
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            StartScreen.this.wrongLogInCounter = 0;
+                        }
+                    })
+                    .show();
+        }
+    }
+
+    /*
         Function listens to sign up button and changes screen when clicked
         Input: None
         Output: None
@@ -47,11 +96,7 @@ public class StartScreen extends ErrorDisplayerScreen {
         this.signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // Clear errors
-                clearScreen();
-                Intent intent = new Intent(StartScreen.this, SignupScreen.class);
-                startActivity(intent);
+                moveToSignUpScreen();
             }
         });
     }
@@ -100,6 +145,7 @@ public class StartScreen extends ErrorDisplayerScreen {
                             break;
                         case Codes.INCORRECT_LOGIN_ERROR_CODE: // Incorrect phone / password
                             StartScreen.super.updateError(StartScreen.this.incorrectLogInError);
+                            wrongLogIn();
                             break;
                     }
                 }

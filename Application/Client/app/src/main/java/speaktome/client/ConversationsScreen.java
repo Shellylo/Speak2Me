@@ -131,6 +131,7 @@ public class ConversationsScreen extends ContactsListScreen{
     /*
         Updates the sql database and the recycler view
         Input: New messages
+        Input: New messages
         Output: None
      */
     @Override

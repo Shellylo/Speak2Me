@@ -1,0 +1,40 @@
+        WORKS WITH .setItems(c, null(listener)) - CharSequence c[] = {"hi", "bye", "die", "Cheese", "Pepperoni", "Cheese", "Pepperoni", "Cheese", "Pepperoni", "Cheese", "Pepperoni","Cheese", "Pepperoni","Cheese", "Pepperoni","Cheese", "Pepperoni"};
+        
+        WOKRS WITH NUMBER PICKER + .setView(NUMBERPICKER) - String s[] = {"hi", "bye", "die", "Cheese", "Pepperoni", "Cheese", "Pepperoni", "Cheese", "Pepperoni", "Cheese", "Pepperoni","Cheese", "Pepperoni","Cheese", "Pepperoni","Cheese", "Pepperoni"};
+        final NumberPicker numberPicker = new NumberPicker(this);
+        numberPicker.setMaxValue(s.length - 1);
+        numberPicker.setMinValue(0);
+        numberPicker.setDisplayedValues(s);
+
+
+        if (isTaskRoot()) {
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Closing Application")
+
+
+
+                    .setView(numberPicker) - CHOOSE ONE
+
+                    .setItems(c, new DialogInterface.OnClickListener() {
+                       public void onClick(DialogInterface dialog, int which) {
+                    // The 'which' argument contains the index position of the selected item 
+                     }) - CHOOSE ONE
+
+
+
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                            System.exit(0);
+                        }
+
+                    })
+                    .setNegativeButton("No", null)
+
+                    .show();
+        }
+        else {
+            finish();
+        }	

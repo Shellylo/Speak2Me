@@ -27,14 +27,22 @@ public class OutputMessages implements Runnable{
      */
     @Override
     public void run() {
+        long lastPing = System.currentTimeMillis();
+        int PING_INTERVAL = 2500;
         try {
             while (true) {
                 while(!this.conversationFlow.isEmpty()) {
                     JSONObject msgToSend = this.conversationFlow.remove();
                     byte[] byteRequest = msgToSend.toString().getBytes("UTF-8");
-                   // byteRequest = Security.encrypt(byteRequest); // Encryption (currently not implemented well)
+                    // byteRequest = Security.encrypt(byteRequest); // Encryption (currently not implemented well)
                     this.out.write(String.format("%010d", byteRequest.length).getBytes()); //Sends message size
                     this.out.write(byteRequest); //Sends message
+                }
+
+                //ping message every [PING_INTERVAL] seconds
+                if(System.currentTimeMillis() > lastPing + PING_INTERVAL) {
+                    this.out.write("0".getBytes());
+                    lastPing = System.currentTimeMillis();
                 }
             }
         }
