@@ -91,6 +91,7 @@ public class RecordedMessagesScreen extends CommunicationScreen {
         Input: Messages to insert
         Output: None
      */
+    @Override
     protected void updateMessages(ArrayList<Message> messages)
     {
         super.updateMessages(messages);

@@ -85,6 +85,11 @@ public class CommunicationScreen extends GeneralScreen implements Runnable{
         }
     }
 
+    /*
+        Inserts each message from input list into the database, and updates list with messages IDs (in db)
+        Input: New Messages list
+        Output: None
+     */
     protected void updateMessages(ArrayList<Message> messages)
     {
         for (int i = 0; i < messages.size(); i++)
