@@ -50,19 +50,6 @@ public class StartScreen extends ErrorDisplayerScreen {
         this.logInListener();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(this.connReceiver, filter);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        unregisterReceiver(this.connReceiver);
-    }
-
     /*
                 Starts the sign up screen
                 Input: none
