@@ -39,4 +39,13 @@ public class Client {
     public JSONObject getPushedMessage() {
         return this.incomingMessages.getPushMessage();
     }
+
+    /*
+        Function closes client socket (calls the matching function in ConnectToServer class)
+        Input: None
+        Output: true if socket successfully closed, false otherwise
+     */
+    public boolean closeSocket() {
+        return this.serverConnection.closeSocket();
+    }
 }
