@@ -1,14 +1,11 @@
 package speaktome.client;
 
 import android.content.Intent;
-import android.icu.text.AlphabeticIndex;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -19,13 +16,9 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.util.Base64;
 
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -173,34 +166,6 @@ public class ChatScreen extends CommunicationScreen{
             }
         });
     }
-
-    private void sendRecord() {
-        try {
-
-            File file = new File(Environment.getExternalStorageDirectory()
-                    .getAbsolutePath() + RecordTask.AUDIO_PATH);
-            int size = (int) file.length();
-            byte[] bytes = new byte[size];
-            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-            buf.read(bytes, 0, bytes.length);
-            buf.close();
-            String content = Base64.encodeToString(bytes, Base64.DEFAULT);
-
-            // Prepare audio message request
-            JSONObject sendRecordReq = new JSONObject();
-            sendRecordReq.put("code", Codes.SPEECH_TO_TEXT_CODE);
-            sendRecordReq.put("src_phone", ChatScreen.this.srcPhone);
-            sendRecordReq.put("dst_phone", ChatScreen.this.dstPhone);
-            sendRecordReq.put("content", content);
-
-            // Send message request
-            ChatScreen.this.client.send(sendRecordReq);
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
 
     /*
         Function listens record button. When clicked, receives record and sends it to server
@@ -353,9 +318,9 @@ public class ChatScreen extends CommunicationScreen{
         }
     }
 
-    private class RecordTask extends AsyncTask<Void, Integer, Void> {
+    public class RecordTask extends AsyncTask<Void, Integer, Void> {
 
-        private static final String AUDIO_PATH = "/messageRecord.m4a";
+        public static final String AUDIO_PATH = "/messageRecord.m4a";
         private static final int MAX_RECORD_LENGTH_IN_MILLISECONDS = 20000;
 
         private MediaRecorder recorder;
@@ -414,7 +379,11 @@ public class ChatScreen extends CommunicationScreen{
 
         @Override
         protected void onPostExecute(Void result) {
-            sendRecord();
+            Intent serviceIntent = new Intent(ChatScreen.this, SendAudioService.class);
+            serviceIntent.putExtra("dst_phone", ChatScreen.this.dstPhone);
+            serviceIntent.putExtra("src_phone", ChatScreen.this.srcPhone);
+
+            ContextCompat.startForegroundService(ChatScreen.this, serviceIntent);
             updateActiveButton(ChatScreen.this.recordButton);
         }
 

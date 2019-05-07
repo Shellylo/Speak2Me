@@ -78,7 +78,6 @@ public class ConnectToServer implements Runnable{
         Output: None
      */
     public DataInputStream getIn() {
-
         return this.in;
     }
 
