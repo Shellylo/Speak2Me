@@ -95,7 +95,7 @@ public class ConversationsScreen extends ContactsListScreen{
         Input: None
         Output: None
      */
-    protected void initRecyclerDetails() {
+    private void initRecyclerDetails() {
         this.contactsDetails.clear();
         ArrayList<ContactChatDetails> messages = this.sqlDB.getTopMessages();
         ArrayList<ContactChatDetails> contacts = super.getContacts();

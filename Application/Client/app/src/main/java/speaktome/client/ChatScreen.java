@@ -91,7 +91,6 @@ public class ChatScreen extends CommunicationScreen{
         }
     }
 
-
     /*
         Display old messages saved in db
         Input: None
@@ -108,7 +107,6 @@ public class ChatScreen extends CommunicationScreen{
 
     /*
         Push new messages at the bottom, if mine on the right side, otherwise on the left
-        TODO: start display from the bottom of the layout
         Input: the message, is mine
         Output: None
      */
@@ -140,9 +138,12 @@ public class ChatScreen extends CommunicationScreen{
         Input: Messages to insert
         Output: None
      */
+    @Override
     protected void updateMessages(ArrayList<Message> messages)
     {
-        super.updateMessages(messages);
+        super.updateMessages(messages); // Add messages to DB
+
+        // Display messages on screen
         for (Message message : messages)
         {
             if (message.getPhone().equals(this.dstPhone) && message.isInChat())
@@ -211,6 +212,11 @@ public class ChatScreen extends CommunicationScreen{
         });
     }
 
+    /*
+        Listens to timer button (if clicked, sets stop variable)
+        Input: None
+        Output: None
+     */
     private void timerListener() {
         this.timerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -303,6 +309,7 @@ public class ChatScreen extends CommunicationScreen{
         Input: request code, result code, and data
         Output: None
      */
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {

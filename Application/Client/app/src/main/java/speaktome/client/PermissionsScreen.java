@@ -12,17 +12,17 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
-public class PermissionsScreen extends AppCompatActivity {
+public class PermissionsScreen extends CommunicationScreen {
     private static final int PERMISSIONS_REQUEST_EXTERNAL_STORAGE = 1;
     private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
     private static final int PERMISSIONS_REQUEST_USE_MICROPHONE = 200;
 
     private boolean externalStoragePermission;
-    private boolean contatctPermission;
+    private boolean contactPermission;
     private boolean michrophonePermission;
 
     private Switch externalStoragePermissionSwitch;
-    private Switch contatctPermissionSwitch;
+    private Switch contactPermissionSwitch;
     private Switch michrophonePermissionSwitch;
     private Button continueButton;
 
@@ -32,21 +32,21 @@ public class PermissionsScreen extends AppCompatActivity {
         setContentView(R.layout.activity_permissions_screen);
 
         this.externalStoragePermissionSwitch = (Switch) findViewById(R.id.PermissionsExternalStorageSwitch);
-        this.contatctPermissionSwitch = (Switch)findViewById(R.id.PermissionsContactsSwitch);
+        this.contactPermissionSwitch = (Switch)findViewById(R.id.PermissionsContactsSwitch);
         this.michrophonePermissionSwitch = (Switch)findViewById(R.id.PermissionsMichrophoneSwitch);
         this.continueButton = (Button)findViewById(R.id.PermissionsContinueButton);
 
         this.checkPermissions();
-        if(this.contatctPermission && this.michrophonePermission && this.externalStoragePermission) {
+        if(this.contactPermission && this.michrophonePermission && this.externalStoragePermission) {
             this.moveToNextScreen();
         }
         else {
             this.continueButton.setEnabled(false);
         }
 
-        if(this.contatctPermission) {
-            this.contatctPermissionSwitch.setChecked(true);
-            this.contatctPermissionSwitch.setClickable(false);
+        if(this.contactPermission) {
+            this.contactPermissionSwitch.setChecked(true);
+            this.contactPermissionSwitch.setClickable(false);
         }
         if(this.michrophonePermission) {
             this.michrophonePermissionSwitch.setChecked(true);
@@ -58,7 +58,7 @@ public class PermissionsScreen extends AppCompatActivity {
             this.externalStoragePermissionSwitch.setClickable(false);
         }
 
-        this.contatctPermissionListener();
+        this.contactPermissionListener();
         this.michrophonePermissionListener();
         this.externalStoragePermissionListener();
         this.continueListener();
@@ -84,11 +84,11 @@ public class PermissionsScreen extends AppCompatActivity {
     private void checkPermissions() {
         // Check the SDK version and whether the permission is already granted or not (contacts).
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && this.checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            this.contatctPermission = false;
+            this.contactPermission = false;
         }
         // Android version is lesser than 6.0 or the permission is already granted (contacts).
         else {
-            this.contatctPermission = true;
+            this.contactPermission = true;
         }
         // Check the SDK version and whether the permission is already granted or not (microphone).
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && this.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) { //***CHANGE THE STATEMENT***
@@ -115,12 +115,12 @@ public class PermissionsScreen extends AppCompatActivity {
         Output: None
      */
     private void updateSwitches() {
-        if(this.contatctPermission) {
-            this.contatctPermissionSwitch.setChecked(true);
-            this.contatctPermissionSwitch.setClickable(false);
+        if(this.contactPermission) {
+            this.contactPermissionSwitch.setChecked(true);
+            this.contactPermissionSwitch.setClickable(false);
         }
         else {
-            this.contatctPermissionSwitch.setChecked(false);
+            this.contactPermissionSwitch.setChecked(false);
         }
         if(this.michrophonePermission) {
             this.michrophonePermissionSwitch.setChecked(true);
@@ -136,7 +136,7 @@ public class PermissionsScreen extends AppCompatActivity {
         else {
             this.externalStoragePermissionSwitch.setChecked(false);
         }
-        if(this.contatctPermission && this.michrophonePermission && this.externalStoragePermission) {
+        if(this.contactPermission && this.michrophonePermission && this.externalStoragePermission) {
             this.continueButton.setAlpha(1);
             this.continueButton.setEnabled(true);
         }
@@ -147,8 +147,8 @@ public class PermissionsScreen extends AppCompatActivity {
         Input: None
         Output: None
      */
-    private void contatctPermissionListener() {
-        this.contatctPermissionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+    private void contactPermissionListener() {
+        this.contactPermissionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
@@ -206,14 +206,15 @@ public class PermissionsScreen extends AppCompatActivity {
         Input: requestCode, permissions and the results
         Output: None
      */
+    @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch(requestCode){
             case PERMISSIONS_REQUEST_READ_CONTACTS:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission is granted
-                    this.contatctPermission = true;
+                    this.contactPermission = true;
                 } else {
-                    this.contatctPermission = false;
+                    this.contactPermission = false;
                     Toast.makeText(this, "Until you grant the permission, you cannot continue", Toast.LENGTH_SHORT).show();
                 }
                 break;

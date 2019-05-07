@@ -1,9 +1,15 @@
 package speaktome.client;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 public class GeneralScreen extends AppCompatActivity {
     protected Client client;
@@ -14,7 +20,6 @@ public class GeneralScreen extends AppCompatActivity {
         // Set client (server connection)
         this.client = ClientHandler.getClient();
     }
-
 
     /*
         Function makes sure when the back button is pressed and is going to cause an app closing, that the user really wants to close the app
@@ -42,4 +47,6 @@ public class GeneralScreen extends AppCompatActivity {
             finish();
         }
     }
+
+
 }
