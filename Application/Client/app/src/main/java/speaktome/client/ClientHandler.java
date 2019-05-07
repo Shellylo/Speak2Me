@@ -14,4 +14,11 @@ public class ClientHandler {
         }
         return ClientHandler.client;
     }
+
+    public static void deleteClient( ) {
+        if (ClientHandler.client != null) {
+            ClientHandler.client.closeSocket();
+            ClientHandler.client = null;
+        }
+    }
 }
