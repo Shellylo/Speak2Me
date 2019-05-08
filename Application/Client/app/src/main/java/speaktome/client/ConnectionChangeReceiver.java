@@ -17,7 +17,7 @@ public class ConnectionChangeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         ConnectionChangeReceiver.isNetworkActive = !(intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false));
-        if(!ConnectionChangeReceiver.isNetworkActive && !ReconnectScreen.isCreated) {
+        if(!ConnectionChangeReceiver.isNetworkActive) {
 
             ClientHandler.deleteClient();
 
