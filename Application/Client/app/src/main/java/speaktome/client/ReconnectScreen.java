@@ -1,24 +1,14 @@
 package speaktome.client;
 
-import android.content.BroadcastReceiver;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.support.v7.app.AppCompatActivity;
 
 public class ReconnectScreen extends AppCompatActivity {
-
-    public static boolean isCreated;
-    private ConnectionChangeReceiver connReceiver = new ConnectionChangeReceiver();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reconnect_screen);
-
-        ReconnectScreen.isCreated = true;
 
         Thread waitForConnection = new Thread() {
 
@@ -38,7 +28,6 @@ public class ReconnectScreen extends AppCompatActivity {
                 }
 
                 // Finish screen and return to StartScreen (login screen)
-                ReconnectScreen.isCreated = false; // Screen is about to be destroyed
                 Intent intent = new Intent(ReconnectScreen.this, StartScreen.class);
                 finish();
                 startActivity(intent);
