@@ -3,6 +3,7 @@ import sys
 import os
 sys.path.append(os.getcwd() + "\\GUI")
 sys.path.append(os.getcwd() + "\\SQL")
+sys.path.append(os.getcwd() + "\\Security")
 import socket
 import thread
 from collections import deque
