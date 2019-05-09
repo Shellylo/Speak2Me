@@ -27,8 +27,6 @@ public class StartScreen extends ErrorDisplayerScreen {
     private TextView alreadyConnectedError;
     private TextView incorrectLogInError;
 
-    private ConnectionChangeReceiver connReceiver = new ConnectionChangeReceiver();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -27,8 +27,8 @@ public class ReconnectScreen extends AppCompatActivity {
                     }
                 }
 
-                // Finish screen and return to StartScreen (login screen)
-                Intent intent = new Intent(ReconnectScreen.this, StartScreen.class);
+                // Finish screen and continue to 'Connect to Server' screen
+                Intent intent = new Intent(ReconnectScreen.this, WaitForServerConnectionScreen.class);
                 finish();
                 startActivity(intent);
             }
