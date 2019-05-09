@@ -17,7 +17,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".WaitForServerConnectionScreen"></activity>
+
         <activity
             android:name=".ReconnectScreen"
             android:theme="@style/NoBarTheme">
@@ -50,6 +50,9 @@
             android:theme="@style/NoBarTheme" />
         <activity
             android:name=".RecordedMessagesScreen"
+            android:theme="@style/NoBarTheme" />
+
+        <activity android:name=".WaitForServerConnectionScreen"
             android:theme="@style/NoBarTheme" />
 
         <service android:name=".SendAudioService" />
