@@ -10,7 +10,7 @@ import java.sql.SQLOutput;
 
 public class ConnectToServer implements Runnable{
     private static final int SERVER_PORT = 3124;
-    private static String serverIP = "109.67.52.245"; //10.0.2.2, 79.177.3.169
+    private static String serverIP = "93.172.149.165"; //10.0.2.2 (local host)
 
     private Socket clientSocket;
     private DataOutputStream out;

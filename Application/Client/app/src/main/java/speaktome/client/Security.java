@@ -10,7 +10,7 @@ public class Security {
         Input: byte array to encrypt
         Output encrypted byte array
      */
-    public static byte[] encrypt(byte[] msg) throws UnsupportedEncodingException {
+    public static byte[] encrypt(byte[] msg) {
         byte[] encryptedByteArray = new byte[msg.length * 4 + 1]; //encrypted byte array size = 4n+1 where n is the length of the input byte array
 
         //first random byte and the positions for the next byte
