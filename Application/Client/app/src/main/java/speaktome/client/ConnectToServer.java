@@ -10,7 +10,7 @@ import java.sql.SQLOutput;
 
 public class ConnectToServer implements Runnable{
     private static final int SERVER_PORT = 3124;
-    private static String serverIP = "93.172.149.165"; //10.0.2.2 (local host)
+    private static String serverIP = "217.132.59.124"; //10.0.2.2 (local host)
 
     private Socket clientSocket;
     private DataOutputStream out;
@@ -81,6 +81,11 @@ public class ConnectToServer implements Runnable{
         return this.in;
     }
 
+    /*
+        Closes client's socket
+        Input: None
+        Output: True if socket is successfully closed, false otherwise
+     */
     public boolean closeSocket() {
         try {
             this.clientSocket.close();
@@ -91,6 +96,11 @@ public class ConnectToServer implements Runnable{
         return this.clientSocket.isClosed();
     }
 
+    /*
+        Changes sever IP to given IP address
+        Input: New IP Address
+        Output: None
+     */
     public static void setIP(String serverIP) {
         ConnectToServer.serverIP = serverIP;
     }

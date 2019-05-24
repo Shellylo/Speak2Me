@@ -3,7 +3,6 @@ import sys
 import os
 sys.path.append(os.getcwd() + "\\GUI")
 sys.path.append(os.getcwd() + "\\SQL")
-sys.path.append(os.getcwd() + "\\Security")
 import socket
 import thread
 from collections import deque
@@ -52,30 +51,15 @@ SOURCE_INVALID_ERROR_CODE = 5
 DESTINATION_UNREACHABLE_ERROR_CODE = 6
 INCORRECT_SIGNUP_DETAILS_ERROR_CODE = 7
 
-def is_phone_correct(phone):
-	'''
-		Checks if phone is legal
-		Input: The phone
-		Output: bool - if it is legal
-	'''
+def isPhoneCorrect(phone):
 	pattern = re.compile("^05[0-9]{8}$") #starts with 05 and contains 10 characters total
 	return bool(pattern.match(phone))
 	
-def is_password_correct(password):
-	'''
-		Checks if password is legal
-		Input: The password
-		Output: bool - if it is legal
-	'''
+def isPasswordCorrect(password):
 	pattern = re.compile("(?=^[A-Za-z0-9]{4,}$)(?=^.*[A-Za-z].*$)") #contains only letters and numbers, contains at least 4 characters, contains at least 1 letter
 	return bool(pattern.match(password))
 	
-def is_name_correct(name):
-	'''
-		Checks if name is legal
-		Input: The name
-		Output: bool - if it is legal
-	'''
+def isNameCorrect(name):
 	pattern = re.compile("^[A-Za-z][A-Za-z0-9]+$") #starts with a letter, can contain only letters and numbers, contains at least 2 characters
 	return bool(pattern.match(name))
 
@@ -109,11 +93,6 @@ def m4a_to_wav(audio_path):
 	return audio_path
 	
 def voice_recognition(audio_path):
-	'''
-		Does speech to text on the audio file
-		Input: The path to the audio file
-		Output: The text
-	'''
 	recognizer = speech_recognition.Recognizer()
 
 	with speech_recognition.AudioFile(audio_path) as source:
@@ -218,8 +197,8 @@ def receive_messages(db_connection, client_socket, message_dict):
 def log_in(db_connection, client_socket, message_dict):
 	'''
 		Function checks if the log in details are correct and logs in the user if they are (adds the user to the connected clients)
-		Input: Database connection, the socket of the client that is trying to log in and the message (request) that contains phone number and password
-		Output: Answer message dict
+		Input: database connection, the socket of the client that is trying to log in and the message (request) that contains phone number and password
+		Output: answer message dict
 	'''
 	ans_messages_dict = { }
 	if not ("phone" in message_dict and "password" in message_dict): # Checks if details are missing
@@ -250,7 +229,7 @@ def sign_up(db_connection, client_socket, message_dict):
 	if not ("phone" in message_dict and "password" in message_dict and "name" in message_dict): # Checks if details are missing
 		ans_messages_dict[client_socket] = { "code": DETAILS_MISSING_ERROR_CODE }
 		
-	elif not(is_phone_correct(message_dict["phone"]) and is_password_correct(message_dict["password"]) and is_name_correct(message_dict["name"])):
+	elif not(isPhoneCorrect(message_dict["phone"]) and isPasswordCorrect(message_dict["password"]) and isNameCorrect(message_dict["name"])):
 		ans_messages_dict[client_socket] = { "code": INCORRECT_SIGNUP_DETAILS_ERROR_CODE }
 		
 	elif sql_db.does_user_exist(db_connection, message_dict["phone"]): # Checks if phone number already exists
@@ -277,11 +256,6 @@ def recvall(sock, n):
     return data	
 	
 def handle_requests(db_connection):
-	'''
-		Handles all incoming requests from all clients
-		Input: Database connection
-		Output: None
-	'''
 	OPERATIONS_DICT = {SIGN_UP_CODE: sign_up, LOG_IN_CODE: log_in, RECEIVE_MESSAGES_CODE: receive_messages, SEND_TEXT_MESSAGE_CODE: send_text_message, SPEECH_TO_TEXT_CODE: speech_to_text}
 	while not (msvcrt.kbhit() and msvcrt.getch() == 'q'):
 		try:

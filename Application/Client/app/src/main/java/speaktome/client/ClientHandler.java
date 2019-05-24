@@ -15,6 +15,11 @@ public class ClientHandler {
         return ClientHandler.client;
     }
 
+    /*
+        Closes current client's socket and deletes static client
+        Input: None
+        Output: None
+     */
     public static void deleteClient( ) {
         if (ClientHandler.client != null) {
             ClientHandler.client.closeSocket();

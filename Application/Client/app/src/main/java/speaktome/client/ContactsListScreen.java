@@ -48,7 +48,7 @@ public class ContactsListScreen extends CommunicationScreen{
                     Cursor pCur = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null); //TODO: CHECK IF WE NEED SECOND QUERY
                     if (pCur.moveToNext()) { // TODO: check if number has the application
                         String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        contactNumber = contactNumber.replaceAll("\\D+","");
+                        contactNumber = contactNumber.replaceAll("\\D+",""); // Remove all non-numbers characters
                         if (contactNumber.startsWith("972")) {
                             contactNumber = contactNumber.replaceFirst("972", "0");
                         }
